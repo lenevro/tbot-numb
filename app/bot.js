@@ -24,3 +24,4 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = bot;
 
 require('./currency');
+require('./percentage');
