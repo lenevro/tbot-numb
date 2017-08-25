@@ -26,7 +26,8 @@ bot.onText(/\/cc ([0-9]+) ([a-z]+) to ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => 
       }
 
       result = match[1] * resVal.rates[match[3].toUpperCase()];
-      formResult = match[1] + " " + match[2].toUpperCase() + " = " + Math.round(result * 100) / 100 + " " + match[3].toUpperCase();
+      formResult = match[1] + " " + match[2].toUpperCase() + " = " + Math.round(result * 100) / 100 + " " + match[3].toUpperCase() +
+                   (getDate != "latest" ? "\n(Rate for " + getDate + ")" : "");
 
       bot.sendMessage(userId, formResult);
     });
@@ -68,7 +69,8 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
         if (~item.indexOf(match[1].toUpperCase())) topVal.splice(i, 1);
       });
 
-      result = "<b>Top " + match[1].toUpperCase() + " Exchange Rates</b>\n\n" + topVal.join("\n");
+      result = "<b>Top " + match[1].toUpperCase() + " Exchange Rates</b>\n\n" + topVal.join("\n") +
+               (getDate != "latest" ? "\n\n(Rates for " + getDate + ")" : "");
 
       bot.sendMessage(userId, result, {
         parse_mode: "HTML"
