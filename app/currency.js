@@ -16,7 +16,7 @@ bot.onText(/\/cc ([0-9]+) ([a-z]+) to ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => 
       try {
         resVal = JSON.parse(body);
 
-        if (resVal.error || !resVal.rates[match[3].toUpperCase()]) {
+        if (resVal.error || !resVal.rates[match[3].toUpperCase()] || new Date() - Date.parse(getDate) < 0) {
           throw new SyntaxError("Incorrect value");
         }
       } catch (e) {
@@ -46,7 +46,7 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
       try {
         resVal = JSON.parse(body);
 
-        if (resVal.error) {
+        if (resVal.error || new Date() - Date.parse(getDate) < 0) {
           throw new SyntaxError("Incorrect value");
         }
       } catch (e) {
