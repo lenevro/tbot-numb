@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const math = require('mathjs');
+
 /* Telegram */
 
 const botApi = require('node-telegram-bot-api');
@@ -18,6 +20,24 @@ if (process.env.NODE_ENV === 'production') {
   bot = new botApi(token, { polling: true });
   bot.setWebHook();
 }
+
+/* Math */
+
+bot.onText(/\/mm (.+)/, (msg, match) => {
+  const userId = msg.from.id;
+
+  let resVal;
+
+  try {
+    resVal = math.eval(match[1]);
+  } catch (e) {
+    bot.sendMessage(userId, e.message);
+
+    return;
+  }
+
+  bot.sendMessage(userId, resVal);
+});
 
 /* Modules */
 
