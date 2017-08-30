@@ -16,11 +16,13 @@ bot.onText(/\/cc ([0-9]+) ([a-z]+) to ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => 
       try {
         resVal = JSON.parse(body);
 
-        if (resVal.error || !resVal.rates[match[3].toUpperCase()] || new Date() - Date.parse(getDate) < 0) {
+        if (resVal.error || !resVal.rates[match[3].toUpperCase()]) {
           throw new SyntaxError("Incorrect value");
+        } else if (new Date() - Date.parse(getDate) < 0) {
+          throw new SyntaxError("Incorrect date");
         }
       } catch (e) {
-        bot.sendMessage(userId, "Incorrect value");
+        bot.sendMessage(userId, e.message);
 
         return;
       }
@@ -46,11 +48,13 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
       try {
         resVal = JSON.parse(body);
 
-        if (resVal.error || new Date() - Date.parse(getDate) < 0) {
+        if (resVal.error) {
           throw new SyntaxError("Incorrect value");
+        } else if (new Date() - Date.parse(getDate) < 0) {
+          throw new SyntaxError("Incorrect date");
         }
       } catch (e) {
-        bot.sendMessage(userId, "Incorrect value");
+        bot.sendMessage(userId, e.message);
 
         return;
       }
