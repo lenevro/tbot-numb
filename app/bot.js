@@ -23,13 +23,15 @@ if (process.env.NODE_ENV === 'production') {
 
 /* Math */
 
-bot.onText(/\/mm (.+)/, (msg, match) => {
+bot.on('message', (msg) => {
+  if (msg.text.match(/^\//)) return;
+
   const userId = msg.from.id;
 
   let resVal;
 
   try {
-    resVal = math.eval(match[1]);
+    resVal = math.eval(msg.text);
   } catch (e) {
     bot.sendMessage(userId, e.message);
 
