@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const math = require('mathjs');
 
 /* Telegram */
@@ -15,6 +13,8 @@ if (process.env.NODE_ENV === 'production') {
   bot = new botApi(token);
   bot.setWebHook(process.env.URL + bot.token);
 } else {
+  require('dotenv').config();
+  
   token = process.env.BOT_TOKEN_LOCAL;
 
   bot = new botApi(token, { polling: true });
