@@ -24,13 +24,13 @@ perEx(/\/per +([0-9,.\s]+)%\s+of\s+(.+)/i, (match) => {
 
 /* Adding percentage: 5% on $30 */
 
-perEx(/\/per +([0-9,.\s]+)%\s+on\s+(.+)/i, (match) => {
+perEx(/\/per +([0-9,.\s]+)%\s+(?:on|\+)\s+(.+)/i, (match) => {
   return (clearNum(match[2]) / 100) * (+clearNum(match[1]) + 100) + " " + curreNum(match[2]);
 });
 
 /* Substracting percentage: 6% off 40 EUR */
 
-perEx(/\/per +([0-9,.\s]+)%\s+off\s+(.+)/i, (match) => {
+perEx(/\/per +([0-9,.\s]+)%\s+(?:off|\-)\s+(.+)/i, (match) => {
   return (clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100) + " " + curreNum(match[2]);
 });
 
