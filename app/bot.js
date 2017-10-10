@@ -1,5 +1,3 @@
-const math = require('mathjs');
-
 /* Telegram */
 
 const botApi = require('node-telegram-bot-api');
@@ -23,6 +21,8 @@ if (process.env.NODE_ENV === 'production') {
 
 /* Math */
 
+const math = require('mathjs');
+
 bot.on('message', (msg) => {
   if (msg.text.match(/^\//)) return;
 
@@ -39,6 +39,26 @@ bot.on('message', (msg) => {
   }
 
   bot.sendMessage(userId, resVal);
+});
+
+/* Time*/
+
+const moment = require('moment-timezone'),
+      cityTimezones = require('city-timezones');
+
+bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
+  let resVal,
+      checkZone = cityTimezones.lookupViaCity(match[1]);
+
+  if (moment.tz.zone(match[1])) {
+    resVal = moment().tz(match[1]).format('MMMM Do YYYY, h:mm:ss a');
+  } else if (checkZone.length != 0) {
+    resVal = moment().tz(checkZone[0].timezone).format('MMMM Do YYYY, h:mm:ss a');
+  } else {
+    resVal = 'Incorrect value';
+  }
+
+  bot.sendMessage(msg.from.id, resVal);
 });
 
 /* Modules */

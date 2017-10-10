@@ -10,8 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "city-timezones": "^1.0.2",
     "express": "^4.15.3",
     "mathjs": "^3.16.2",
+    "moment": "^2.19.0",
+    "moment-timezone": "^0.5.13",
     "node-telegram-bot-api": "^0.27.1",
     "request": "^2.81.0"
   },
