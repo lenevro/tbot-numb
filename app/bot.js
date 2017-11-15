@@ -19,6 +19,16 @@ if (process.env.NODE_ENV === 'production') {
   bot.setWebHook();
 }
 
+bot.onText(/(\/help)$/, (msg) => {
+  bot.sendMessage(msg.from.id,
+    "You can use this service commands:\n\n" +
+    "Inline message - math operations,\nexample: sqrt(256)\n\n" +
+    "\/per [value] - percentage operations,\nexample: per 20% of $10\n\n" +
+    "\/cc [value] - currency conversion & top exchange rates,\nexample: /cc usd\n\n" +
+    "\/time [city name] - get time for the city,\nexample: /time Moscow\n\n"
+  );
+});
+
 /* Math */
 
 const math = require('mathjs');
