@@ -77,3 +77,4 @@ module.exports = bot;
 
 require('./currency');
 require('./percentage');
+require('./note');
