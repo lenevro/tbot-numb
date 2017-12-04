@@ -21,11 +21,27 @@ if (process.env.NODE_ENV === 'production') {
 
 bot.onText(/(\/help)$/, (msg) => {
   bot.sendMessage(msg.from.id,
-    "You can use this service commands:\n\n" +
-    "Inline message - math operations,\nexample: sqrt(256)\n\n" +
-    "\/per [value] - percentage operations,\nexample: per 20% of $10\n\n" +
-    "\/cc [value] - currency conversion & top exchange rates,\nexample: /cc usd\n\n" +
-    "\/time [city name] - get time for the city,\nexample: /time Moscow\n\n"
+
+`You can use this service commands:
+
+Inline message - math operations,
+example: sqrt(256) * log(10, 2) * 2^4
+
+\/cc [value] - currency conversion & top exchange rates,
+example: /cc usd
+
+\/time [city name] - get time for the city,
+example: /time Moscow
+
+\/note [00:00 note] - set note,
+example: /note 08:00 - stand up dude
+
+\/note_ls - get note list,
+example: /note_ls
+
+\/note_rm [number] - remove note,
+example: /note_rm 2`
+
   );
 });
 

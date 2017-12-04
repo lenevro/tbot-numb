@@ -50,7 +50,7 @@ mongoClient.connect(dbUri, (err, db) => {
 
 /* Set note */
 
-bot.onText(/\/nt +([0-9]+):([0-9]+)\s+-\s+(.+)/, (msg, match) => {
+bot.onText(/\/note +([0-9]+):([0-9]+)\s+-\s+(.+)/, (msg, match) => {
   const userId = msg.from.id,
         timeObj = { h: match[1], m: match[2] },
         noteMsg = match[3];
@@ -88,7 +88,7 @@ bot.onText(/\/nt +([0-9]+):([0-9]+)\s+-\s+(.+)/, (msg, match) => {
 
 /* Get note list */
 
-bot.onText(/\/ls/, (msg, match) => {
+bot.onText(/\/note_ls/, (msg, match) => {
   const userId = msg.from.id;
 
   mongoClient.connect(dbUri, (err, db) => {
@@ -109,7 +109,7 @@ bot.onText(/\/ls/, (msg, match) => {
 
 /* Remove note */
 
-bot.onText(/\/rm (.+)/, (msg, match) => {
+bot.onText(/\/note_rm (.+)/, (msg, match) => {
   const userId = msg.from.id,
         noteNum = match[1] - 1;
 
