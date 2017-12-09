@@ -16,8 +16,10 @@
     "mathjs": "^3.16.2",
     "moment": "^2.19.0",
     "moment-timezone": "^0.5.13",
+    "money": "^0.2.0",
     "mongodb": "^2.2.33",
     "monk": "^6.0.5",
+    "node-fetch": "^1.7.3",
     "node-telegram-bot-api": "^0.27.1",
     "request": "^2.81.0"
   },
