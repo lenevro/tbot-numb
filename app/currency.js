@@ -57,10 +57,13 @@ new cronNote({
 
 /* Bot Msg */
 
-bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
-  const userId = msg.from.id,
-        date = match[2] ? match[2].replace(/for /, '') : 'latest';
-      
+/* 
+  Data currency: 
+    /cc usd;
+    /cc usd for 2010-10-10;
+*/
+
+function sendDataCurrency(unit, user, date) {
   let getData;
 
   if (date != 'latest') {
@@ -75,7 +78,7 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
         }
       )
       .then(() => {
-          getData = key => round(fx(1).from(match[1].toUpperCase()).to(key));
+          getData = key => round(fx(1).from(unit).to(key));
 
           sendMsg();
         }
@@ -83,10 +86,10 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
   } else {
     getData = (key) => {
       fx.rates = fxYester.rates;
-      const yester = round(fx(1).from(match[1].toUpperCase()).to(key));
+      const yester = round(fx(1).from(unit).to(key));
 
       fx.rates = fxLatest.rates;
-      const latest = round(fx(1).from(match[1].toUpperCase()).to(key));
+      const latest = round(fx(1).from(unit).to(key));
 
       return `${latest} [` + ((latest - yester) > 0 ? '+' + round(latest - yester) : round(latest - yester)) + ']';
     }
@@ -102,22 +105,33 @@ bot.onText(/\/cc ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
     ];
 
     topVal.forEach((item, i) => {
-      if (~item.indexOf(match[1].toUpperCase())) topVal.splice(i, 1);
+      if (~item.indexOf(unit)) topVal.splice(i, 1);
     });
 
-    const result = `<b>Top ${match[1].toUpperCase()} Exchange Rates</b>\n\n` + topVal.join('\n') +
+    const result = `<b>Top ${unit} Exchange Rates</b>\n\n` + topVal.join('\n') +
                    (date != 'latest' ? `\n\n(Rates for ${date})` : `\n\n(Last update: ${fxLatest.date})`);
 
-    bot.sendMessage(userId, result, {
+    bot.sendMessage(user, result, {
       parse_mode: 'HTML'
     });
   }
+};
+
+bot.onText(/^\/cc\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
+  const userId = msg.from.id,
+        unit = match[1].toUpperCase();
+        date = match[2] ? match[2].replace(/for /, '') : 'latest';
+
+  sendDataCurrency(unit, userId, date);
 });
 
-bot.onText(/\/cc ([0-9]+) ([a-z]+) to ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
-  const userId = msg.from.id,
-        date = match[4] ? match[4].replace(/for /, '') : 'latest';
+/* 
+  Custom data currency: 
+    /cc 1 usd to rub;
+    /cc 1 usd to rub for 2010-10-10;
+*/
 
+function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
   if (date != 'latest') {
     fetch('https://api.fixer.io/' + date)
       .then((resp) => {
@@ -137,11 +151,26 @@ bot.onText(/\/cc ([0-9]+) ([a-z]+) to ([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => 
   }
 
   function sendMsg() {
-    const result = fx(match[1]).from(match[2].toUpperCase()).to(match[3].toUpperCase());
+    const result = fx(unitNum).from(unit).to(unitCon);
 
-    const buildMsg = `${match[1]} ${match[2].toUpperCase()} = ${round(result)} ${match[3].toUpperCase()}` +
+    const buildMsg = `${unitNum} ${unit} = ${round(result)} ${unitCon}` +
                      (date != 'latest' ? `\n(Rate for ${date})` : `\n(Last update: ${fxLatest.date})`);
 
-    bot.sendMessage(userId, buildMsg);
+    bot.sendMessage(user, buildMsg);
   }
+}
+
+bot.onText(/^\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
+  const userId = msg.from.id,
+        unitNum = match[1],
+        unit = match[2].toUpperCase(),
+        unitCon = match[3].toUpperCase(),
+        date = match[4] ? match[4].replace(/for /, '') : 'latest';
+
+  sendCustomDataCurrency(unitNum, unit, unitCon, userId, date);
 });
+
+/* Modules */
+
+module.exports.sendDataCurrency = sendDataCurrency;
+module.exports.sendCustomDataCurrency = sendCustomDataCurrency;

@@ -1,7 +1,9 @@
 const bot = require('./bot'),
       mongoClient = require("mongodb").MongoClient,
       dbUri = process.env.MONGO || 'mongodb://localhost:27017/notes',
-      cronNote = require('cron').CronJob;
+      cronNote = require('cron').CronJob,
+      sendDataCurrency = require('./currency').sendDataCurrency,
+      sendCustomDataCurrency = require('./currency').sendCustomDataCurrency;
 
 /* Cron Hash */
 
@@ -23,6 +25,24 @@ function setCronNote(user, time, msg) {
   const note = new cronNote({
     cronTime: noteTime,
     onTick() {
+      if (msg.match(/\/cc\s+([a-z]+)/)) {
+        const match = msg.match(/\/cc\s+([a-z]+)/),
+              unit = match[1].toUpperCase();
+
+        sendDataCurrency(unit, user, 'latest');
+
+        return;
+      } else if (msg.match(/\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+)/)) {
+        const match = msg.match(/\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+)/),
+              unitNum = match[1],
+              unit = match[2].toUpperCase(),
+              unitCon = match[3].toUpperCase();
+
+        sendCustomDataCurrency(unitNum, unit, unitCon, user, 'latest');
+
+        return;
+      }
+
       bot.sendMessage(user, msg);
     },
     start: true,
