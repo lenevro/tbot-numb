@@ -1,0 +1,55 @@
+const bot = require('./bot');
+
+/* Help */
+
+bot.onText(/(\/help)$/, (msg) => {
+  bot.sendMessage(msg.from.id,
+
+`You can use this service commands:
+
+Inline message - math operations,
+example: sqrt(256) * log(10, 2) * 2^4
+
+\/cc [value] - currency conversion & top exchange rates,
+example: /cc usd
+
+\/time [city name] - get time for the city,
+example: /time Moscow
+
+\/note [00:00 note] - set note,
+example: /note 08:00 - stand up dude
+
+\/note_ls - get note list,
+example: /note_ls
+
+\/note_rm [number] - remove note,
+example: /note_rm 2`
+
+  );
+});
+
+/* /cc */
+
+bot.onText(/(\/cc)$/, (msg) => {
+  const userId = msg.from.id;
+
+  bot.sendMessage(userId, 'Choose period:', {
+    'reply_markup': {
+      'keyboard': [
+        ['AUD', 'BGN', 'BRL'],
+        ['CAD', 'CHF', 'CNY'],
+        ['CZK', 'DKK', 'GBP'],
+        ['HKD', 'HRK', 'HUF'],
+        ['IDR', 'ILS', 'INR'],
+        ['JPY', 'KRW', 'MXN'],
+        ['MYR', 'NOK', 'NZD'],
+        ['PHP', 'PLN', 'RON'],
+        ['RUB', 'SEK', 'SGD'],
+        ['THB', 'TRY', 'USD'],
+        ['ZAR']
+      ],
+      'resize_keyboard': true,
+      'one_time_keyboard': true
+    }
+  });
+});

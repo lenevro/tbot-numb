@@ -99,8 +99,12 @@ function sendDataCurrency(unit, user, date) {
 
   function sendMsg() {
     const topVal = [
-      `🇪🇺 EUR: ${getData('EUR')}`,
       `🇺🇸 USD: ${getData('USD')}`,
+      `🇪🇺 EUR: ${getData('EUR')}`,
+      `🇯🇵 JPY: ${getData('JPY')}`,
+      `🇦🇺 AUD: ${getData('AUD')}`,
+      `🇨🇭 CHF: ${getData('CHF')}`,
+      `🇨🇦 CAD: ${getData('CAD')}`,
       `🇷🇺 RUB: ${getData('RUB')}`
     ];
 
@@ -170,7 +174,24 @@ bot.onText(/^\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, m
   sendCustomDataCurrency(unitNum, unit, unitCon, userId, date);
 });
 
+/* 
+  Inline: 
+    USD
+*/
+
+const currencyList = ['AUD', 'BGN', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK', 'GBP', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'USD', 'ZAR'];
+
+bot.on('message', msg => {
+  const userId = msg.from.id,
+        unit = msg.text.toUpperCase();
+
+  if (~currencyList.indexOf(unit)) {
+    sendDataCurrency(unit, userId, 'latest');
+  }
+});
+
 /* Modules */
 
 module.exports.sendDataCurrency = sendDataCurrency;
 module.exports.sendCustomDataCurrency = sendCustomDataCurrency;
+module.exports.currencyList = currencyList;

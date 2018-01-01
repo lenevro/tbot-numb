@@ -19,38 +19,15 @@ if (process.env.NODE_ENV === 'production') {
   bot.setWebHook();
 }
 
-bot.onText(/(\/help)$/, (msg) => {
-  bot.sendMessage(msg.from.id,
-
-`You can use this service commands:
-
-Inline message - math operations,
-example: sqrt(256) * log(10, 2) * 2^4
-
-\/cc [value] - currency conversion & top exchange rates,
-example: /cc usd
-
-\/time [city name] - get time for the city,
-example: /time Moscow
-
-\/note [00:00 note] - set note,
-example: /note 08:00 - stand up dude
-
-\/note_ls - get note list,
-example: /note_ls
-
-\/note_rm [number] - remove note,
-example: /note_rm 2`
-
-  );
-});
+module.exports = bot;
 
 /* Math */
 
-const math = require('mathjs');
+const math = require('mathjs'),
+      currencyList = require('./messages').currencyList;
 
 bot.on('message', (msg) => {
-  if (msg.text.match(/^\//)) return;
+  if (msg.text.match(/^\//) || msg.text.toUpperCase().indexOf(currencyList)) return;
 
   const userId = msg.from.id;
 
@@ -89,8 +66,7 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
 
 /* Modules */
 
-module.exports = bot;
-
 require('./currency');
 require('./percentage');
 require('./note');
+require('./messages');
