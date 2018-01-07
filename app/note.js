@@ -1,6 +1,8 @@
 const bot = require('./bot'),
-      mongoClient = require("mongodb").MongoClient,
+      monk = require('monk'),
       dbUri = process.env.MONGO || 'mongodb://localhost:27017/notes',
+      db = monk(dbUri),
+      notes = db.get('notes'),
       cronNote = require('cron').CronJob,
       sendDataCurrency = require('./currency').sendDataCurrency,
       sendCustomDataCurrency = require('./currency').sendCustomDataCurrency;
@@ -19,7 +21,7 @@ function stopNote(user, time, msg) {
   }
 }
 
-function setCronNote(user, time, msg) {
+function setCronNote(user, time, msg, tz) {
   const noteTime = `00 ${time.m} ${time.h} * * *`;
 
   const note = new cronNote({
@@ -46,25 +48,26 @@ function setCronNote(user, time, msg) {
       bot.sendMessage(user, msg);
     },
     start: true,
-    timeZone: process.env.TZ
+    timeZone: tz
   });
 
   cronNoteHash.set(getNoteId(user, time, msg), note);
 }
 
-/* Set note */
+/* Set note from database */
 
-mongoClient.connect(dbUri, (err, db) => {
-  const collection = db.collection("notes");
-  
-  collection.find({}).toArray((err, results) => {
-    results.forEach((item) => {
-      const user = item.name;
+db.then(() => {
+  notes.find({}).each((item) => {
+    const user = item.name,
+          tz = item.tz;
 
+    if (item.notifications) {
       item.notifications.forEach((item) => {
-        setCronNote(user, item[0], item[1]);
+        setCronNote(user, item[0], item[1], tz);
       });
-    });
+    }
+  }).then(() => {
+    console.log('Set notes!');
   });
 });
 
@@ -75,56 +78,46 @@ bot.onText(/\/note +([0-9]+):([0-9]+)\s+-\s+(.+)/, (msg, match) => {
         timeObj = { h: match[1], m: match[2] },
         noteMsg = match[3];
 
-  setCronNote(msg.from.id, timeObj, noteMsg);
-
-  mongoClient.connect(dbUri, (err, db) => {
-    const collection = db.collection("notes");
-    
-    collection.findOne({ name: userId }, (err, user) => {
-      if (user) {
-        collection.updateOne(
-          { name: userId },
-          { 
-            $push: { notifications: [timeObj, noteMsg] }
-          },
-          (err, result) => {
-            db.close();
-          }
-        );
-      } else {
-        collection.insertOne(
-          {
-            name: userId,
-            notifications: [[timeObj, noteMsg]]
-          }, 
-          (err, result) => {
-            db.close();
-          }
-        );
-      }
-    });
+  notes.findOne({ name: userId }).then((user) => {
+    if (user && user.timezone) {
+      notes.update(
+        { name: userId },
+        { 
+          $push: { notifications: [timeObj, noteMsg] }
+        }
+      ).then(() => {
+        setCronNote(userId, timeObj, noteMsg, user.timezone);
+        getNoteList(userId);
+      });
+    } else {
+      bot.sendMessage(userId, 'Please use /tz to set the timezone');
+    }
   });
 });
 
 /* Get note list */
 
-bot.onText(/\/note_ls/, (msg, match) => {
-  const userId = msg.from.id;
-
-  mongoClient.connect(dbUri, (err, db) => {
-    const collection = db.collection("notes");
-
-    let noteList,
-        noteNum = 0;
-    
-    collection.find({ name: userId }).toArray((err, results) => {
-      noteList = results[0].notifications.map((note) => {
+function getNoteList(userId) {
+  let noteList,
+      noteNum = 0;
+ 
+  notes.findOne({ name: userId }).then((user) => {
+    if (user && user.notifications != 0) {
+      noteList = user.notifications.map((note) => {
         return `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`;
       });
 
-      bot.sendMessage(userId, noteList.join("\n"));
-    });
+      bot.sendMessage(userId, '<b>Your note list:</b>\n\n' + noteList.join('\n'), {
+        parse_mode: 'HTML'
+      });
+    } else {
+      bot.sendMessage(userId, 'List of notes is empty');
+    }
   });
+}
+
+bot.onText(/\/note_ls/, (msg, match) => {
+  getNoteList(msg.from.id);
 });
 
 /* Remove note */
@@ -133,25 +126,56 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
   const userId = msg.from.id,
         noteNum = match[1] - 1;
 
-  let noteDel;
+  notes.findOne({ name: userId }).then((user) => {
+    let noteDel = user.notifications[noteNum];
 
-  mongoClient.connect(dbUri, (err, db) => {
-    const collection = db.collection("notes");
-    
-    collection.find({ name: userId }).toArray((err, results) => {
-      noteDel = results[0].notifications[noteNum];
-
-      collection.update(
+    if (noteDel) {
+      notes.update(
         { name: userId }, 
         { 
           $pull: { notifications: noteDel }
-        },
-        (err, result) => {
-          db.close();
         }
-      );
-
-      stopNote(userId, noteDel[0], noteDel[1]);
-    });
+      ).then(() => {
+        stopNote(userId, noteDel[0], noteDel[1]);
+        getNoteList(userId)
+      });
+    }
   });
+});
+
+/* Time zone */
+
+const cityTimezones = require('city-timezones');
+
+bot.onText(/\/tz (.+)/, (msg, match) => {
+  const userId = msg.from.id,
+        tz = match[1].charAt(0).toUpperCase() + match[1].slice(1),
+        checkZone = cityTimezones.lookupViaCity(tz);
+
+  if (checkZone.length != 0) {
+    notes.findOne({ name: userId }).then((user) => {
+      if (user) {
+        notes.update(
+          { name: userId },
+          { 
+            $set: { timezone: checkZone[0].timezone }
+          }
+        ).then(() => {
+          user.notifications.forEach((item) => {
+            stopNote(userId, item[0], item[1]);
+            setCronNote(userId, item[0], item[1], checkZone[0].timezone);
+          });
+        });
+      } else {
+        notes.insert(
+          {
+            name: userId,
+            timezone: checkZone[0].timezone
+          }
+        );
+      }
+    });
+  } else {
+    bot.sendMessage(userId, 'Unknown city');
+  }
 });
