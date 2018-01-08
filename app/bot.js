@@ -21,29 +21,6 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = bot;
 
-/* Math */
-
-const math = require('mathjs'),
-      currencyList = require('./messages').currencyList;
-
-bot.on('message', (msg) => {
-  if (msg.text.match(/^\//) || msg.text.toUpperCase().indexOf(currencyList)) return;
-
-  const userId = msg.from.id;
-
-  let resVal;
-
-  try {
-    resVal = math.eval(msg.text);
-  } catch (e) {
-    bot.sendMessage(userId, e.message);
-
-    return;
-  }
-
-  bot.sendMessage(userId, resVal);
-});
-
 /* Time*/
 
 const moment = require('moment-timezone'),
@@ -66,7 +43,7 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
 
 /* Modules */
 
+require('./math');
 require('./currency');
-require('./percentage');
 require('./note');
 require('./messages');
