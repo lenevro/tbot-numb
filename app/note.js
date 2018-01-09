@@ -102,7 +102,7 @@ function getNoteList(userId) {
       noteNum = 0;
  
   notes.findOne({ name: userId }).then((user) => {
-    if (user && user.notifications != 0) {
+    if (user && user.notifications && user.notifications != 0) {
       noteList = user.notifications.map((note) => {
         return `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`;
       });
@@ -152,10 +152,10 @@ bot.onText(/(\/tz)$/, (msg, match) => {
   const userId = msg.from.id;
 
   notes.findOne({ name: userId }).then((user) => {
-    if (user.timezone) {
+    if (user && user.timezone) {
       bot.sendMessage(userId, 'Your timezone: ' + user.timezone);
     } else {
-      bot.sendMessage(userId, 'Please set your timezone');
+      bot.sendMessage(userId, 'Please set your timezone, \nexample: /tz Moscow');
     }
   });
 });
@@ -185,10 +185,12 @@ bot.onText(/\/tz (.+)/, (msg, match) => {
             $set: { timezone: timezone }
           }
         ).then(() => {
-          user.notifications.forEach((item) => {
-            stopNote(userId, item[0], item[1]);
-            setCronNote(userId, item[0], item[1], timezone);
-          });
+          if (user.notifications) {
+            user.notifications.forEach((item) => {
+              stopNote(userId, item[0], item[1]);
+              setCronNote(userId, item[0], item[1], timezone);
+            });
+          }
 
           bot.sendMessage(userId, 'Your timezone: ' + timezone);
         });
@@ -198,7 +200,9 @@ bot.onText(/\/tz (.+)/, (msg, match) => {
             name: userId,
             timezone: timezone
           }
-        );
+        ).then(() => {
+          bot.sendMessage(userId, 'Your timezone: ' + timezone);
+        });
       }
     });
   } else {

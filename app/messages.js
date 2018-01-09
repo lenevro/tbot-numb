@@ -13,6 +13,9 @@ example: sqrt(256) * log(10, 2) * 2^4
 \/cc [value] - currency conversion & top exchange rates,
 example: /cc usd
 
+\/tz [city name] - set your timezone,
+example: /tz Moscow
+
 \/time [city name] - get time for the city,
 example: /time Moscow
 
@@ -28,7 +31,7 @@ example: /note_rm 2`
   );
 });
 
-/* /cc */
+/* Currency */
 
 bot.onText(/(\/cc)$/, (msg) => {
   const userId = msg.from.id;
@@ -52,4 +55,23 @@ bot.onText(/(\/cc)$/, (msg) => {
       'one_time_keyboard': true
     }
   });
+});
+
+/* Notes */
+
+bot.onText(/(\/note)$/, (msg) => {
+  bot.sendMessage(msg.from.id,
+
+`You can use this service commands for notes:
+
+\/note [00:00 note] - set note,
+example: /note 08:00 - stand up dude
+
+\/note_ls - get note list,
+example: /note_ls
+
+\/note_rm [number] - remove note,
+example: /note_rm 2`
+
+  );
 });
