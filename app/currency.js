@@ -109,7 +109,9 @@ function sendDataCurrency(unit, user, date) {
     ];
 
     topVal.forEach((item, i) => {
-      if (~item.indexOf(unit)) topVal.splice(i, 1);
+      if (~item.indexOf(unit)) {
+        topVal.splice(i, 1);
+      }
     });
 
     const result = `<b>Top ${unit} Exchange Rates</b>\n\n` + topVal.join('\n') +

@@ -107,7 +107,7 @@ function getNoteList(userId) {
         return `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`;
       });
 
-      bot.sendMessage(userId, '<b>Your note list:</b>\n\n' + noteList.join('\n'), {
+      bot.sendMessage(userId, '<b>Your note list:</b>\n\n' + noteList.join('\n') + '\n\nTimezone: ' + user.timezone, {
         parse_mode: 'HTML'
       });
     } else {
@@ -145,32 +145,58 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
 
 /* Time zone */
 
-const cityTimezones = require('city-timezones');
+const moment = require('moment-timezone'),
+      cityTimezones = require('city-timezones');
+
+bot.onText(/(\/tz)$/, (msg, match) => {
+  const userId = msg.from.id;
+
+  notes.findOne({ name: userId }).then((user) => {
+    if (user.timezone) {
+      bot.sendMessage(userId, 'Your timezone: ' + user.timezone);
+    } else {
+      bot.sendMessage(userId, 'Please set your timezone');
+    }
+  });
+});
 
 bot.onText(/\/tz (.+)/, (msg, match) => {
   const userId = msg.from.id,
-        tz = match[1].charAt(0).toUpperCase() + match[1].slice(1),
-        checkZone = cityTimezones.lookupViaCity(tz);
+        userCity = match[1].charAt(0).toUpperCase() + match[1].slice(1),
+        checkCity = cityTimezones.lookupViaCity(userCity),
+        checkZone = moment.tz.zone(userCity);
 
-  if (checkZone.length != 0) {
+  let timezone;
+
+  if (checkZone) {
+    timezone = checkZone.name;
+  } else if (checkCity.length != 0) {
+    timezone = checkCity[0].timezone;
+  } else {
+    timezone = false;
+  }
+
+  if (timezone) {
     notes.findOne({ name: userId }).then((user) => {
       if (user) {
         notes.update(
           { name: userId },
           { 
-            $set: { timezone: checkZone[0].timezone }
+            $set: { timezone: timezone }
           }
         ).then(() => {
           user.notifications.forEach((item) => {
             stopNote(userId, item[0], item[1]);
-            setCronNote(userId, item[0], item[1], checkZone[0].timezone);
+            setCronNote(userId, item[0], item[1], timezone);
           });
+
+          bot.sendMessage(userId, 'Your timezone: ' + timezone);
         });
       } else {
         notes.insert(
           {
             name: userId,
-            timezone: checkZone[0].timezone
+            timezone: timezone
           }
         );
       }

@@ -27,18 +27,18 @@ const moment = require('moment-timezone'),
       cityTimezones = require('city-timezones');
 
 bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
-  let resVal,
+  let time,
       checkZone = cityTimezones.lookupViaCity(match[1]);
 
   if (moment.tz.zone(match[1])) {
-    resVal = moment().tz(match[1]).format('MMMM Do YYYY, h:mm:ss a');
+    time = moment().tz(match[1]).format('MMMM Do YYYY, h:mm:ss a');
   } else if (checkZone.length != 0) {
-    resVal = moment().tz(checkZone[0].timezone).format('MMMM Do YYYY, h:mm:ss a');
+    time = moment().tz(checkZone[0].timezone).format('MMMM Do YYYY, h:mm:ss a');
   } else {
-    resVal = 'Incorrect value';
+    time = 'Unknown city';
   }
 
-  bot.sendMessage(msg.from.id, resVal);
+  bot.sendMessage(msg.from.id, time);
 });
 
 /* Modules */
