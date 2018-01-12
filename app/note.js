@@ -126,20 +126,31 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
   const userId = msg.from.id,
         noteNum = match[1] - 1;
 
-  notes.findOne({ name: userId }).then((user) => {
-    let noteDel = user.notifications[noteNum];
+  function delNote(num) {
+    notes.update(
+      { name: userId }, 
+      { 
+        $pull: { notifications: num }
+      }
+    ).then(() => {
+      stopNote(userId, num[0], num[1]);
+    });
+  }
 
-    if (noteDel) {
-      notes.update(
-        { name: userId }, 
-        { 
-          $pull: { notifications: noteDel }
-        }
-      ).then(() => {
-        stopNote(userId, noteDel[0], noteDel[1]);
-        getNoteList(userId)
+  notes.findOne({ name: userId }).then((user) => {
+    const noteList = user.notifications;
+
+    if (match[1] == 'all') {
+      noteList.forEach((item) => {
+        delNote(item);
       });
+    } else if (noteList[noteNum]) {
+      delNote(noteList[noteNum]);
     }
+  }).then(() => {
+    setTimeout(() => {
+      getNoteList(userId);
+    }, 1000);
   });
 });
 
