@@ -36,25 +36,44 @@ example: /note_rm 2`
 bot.onText(/(\/cc)$/, (msg) => {
   const userId = msg.from.id;
 
-  bot.sendMessage(userId, 'Choose period:', {
+  bot.sendMessage(userId, 'Choose currency:', {
     'reply_markup': {
       'keyboard': [
-        ['AUD', 'BGN', 'BRL'],
-        ['CAD', 'CHF', 'CNY'],
-        ['CZK', 'DKK', 'GBP'],
-        ['HKD', 'HRK', 'HUF'],
-        ['IDR', 'ILS', 'INR'],
-        ['JPY', 'KRW', 'MXN'],
-        ['MYR', 'NOK', 'NZD'],
-        ['PHP', 'PLN', 'RON'],
-        ['RUB', 'SEK', 'SGD'],
-        ['THB', 'TRY', 'USD'],
-        ['ZAR']
+        ['USD', 'EUR', 'JPY'],
+        ['AUD', 'CHF', 'CAD'],
+        ['RUB'],
+        ['All currencies']
       ],
       'resize_keyboard': true,
       'one_time_keyboard': true
     }
   });
+});
+
+bot.on('message', (msg) => {
+  const userId = msg.from.id;
+
+  if (msg.text == 'All currencies') {
+    bot.sendMessage(userId, 'Choose currency:', {
+      'reply_markup': {
+        'keyboard': [
+          ['AUD', 'BGN', 'BRL'],
+          ['CAD', 'CHF', 'CNY'],
+          ['CZK', 'DKK', 'GBP'],
+          ['HKD', 'HRK', 'HUF'],
+          ['IDR', 'ILS', 'INR'],
+          ['JPY', 'KRW', 'MXN'],
+          ['MYR', 'NOK', 'NZD'],
+          ['PHP', 'PLN', 'RON'],
+          ['RUB', 'SEK', 'SGD'],
+          ['THB', 'TRY', 'USD'],
+          ['ZAR']
+        ],
+        'resize_keyboard': true,
+        'one_time_keyboard': true
+      }
+    });
+  }
 });
 
 /* Notes */

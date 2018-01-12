@@ -181,13 +181,13 @@ bot.onText(/^\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, m
     USD
 */
 
-const currencyList = ['AUD', 'BGN', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK', 'GBP', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'USD', 'ZAR'];
+const currencyList = ['AUD', 'BGN', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK', 'GBP', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'USD', 'ZAR', 'EUR', 'ALL CURRENCIES'];
 
 bot.on('message', msg => {
   const userId = msg.from.id,
         unit = msg.text.toUpperCase();
 
-  if (~currencyList.indexOf(unit)) {
+  if (~currencyList.indexOf(unit) && msg.text != 'All currencies') {
     sendDataCurrency(unit, userId, 'latest');
   }
 });
