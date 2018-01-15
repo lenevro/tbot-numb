@@ -21,6 +21,14 @@ body {
       color: #000;
     }
 
+        h1.docs__cap {
+          margin-top: 25px;
+          font-size: 38px;
+          font-weight: 300;
+          letter-spacing: 0;
+          color: #000;
+        }
+
     .docs__text {
       font-size: 16px;
     }
@@ -29,6 +37,10 @@ body {
           margin: 15px 0;
           line-height: 24px;
         }
+
+            .docs__text p a {
+              color: #0BABE0;
+            }
 
     .docs__op-list {
       margin: 15px 0;
@@ -63,3 +75,25 @@ body {
                 .docs__op-list li .op-list__ex span {
                   color: #8993A6;
                 }
+
+@media screen and (max-width: 790px) {
+  #container {
+    width: auto;
+    padding: 20px 30px;
+  }
+
+      .docs__op-list li .op-list__ex {
+        width: 100%;
+        float: none;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+          .docs__op-list li.op-list__head .op-list__ex {
+            margin-bottom: 0;
+          }
+
+      .op-list__head span:last-child {
+        display: none;
+      }
+}
