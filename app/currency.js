@@ -166,9 +166,9 @@ function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
   }
 }
 
-bot.onText(/^\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
+bot.onText(/^\/cc\s+([0-9,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
   const userId = msg.from.id,
-        unitNum = match[1],
+        unitNum = match[1].replace(/\,/g, '.').replace(/\s/g, ''),
         unit = match[2].toUpperCase(),
         unitCon = match[3].toUpperCase(),
         date = match[4] ? match[4].replace(/for /, '') : 'latest';
