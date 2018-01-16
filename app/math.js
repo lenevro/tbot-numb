@@ -21,32 +21,32 @@ function clearNum(match) {
 }
 
 function curreNum(match) {
-  return match.match(/[^0-9,.\s]/g) ? match.match(/[^0-9,.\s]/g).join('') : '';
+  return match.match(/[\D,.\s]/g) ? match.match(/[\D,.\s]/g).join('') : '';
 }
 
 /* Adding percentage: '5% on $30' and '$30 on 5%'*/
 
-perEx(/([0-9,.]+)%\s+(?:on|\+)\s+(.+)/i, (match) => {
+perEx(/([\d,.]+)%\s+(?:on|\+)\s+(.+)/i, (match) => {
   return (clearNum(match[2]) / 100) * (+clearNum(match[1]) + 100) + ' ' + curreNum(match[2]);
 });
 
-perEx(/(.+)\s+(?:on|\+)\s+([0-9,.]+)%/i, (match) => {
+perEx(/(.+)\s+(?:on|\+)\s+([\d,.]+)%/i, (match) => {
   return (clearNum(match[1]) / 100) * (+clearNum(match[2]) + 100) + ' ' + curreNum(match[1]);
 });
 
 /* Substracting percentage: '6% off 40 EUR' and '40 EUR off 6%'*/
 
-perEx(/([0-9,.]+)%\s+(?:off|\-)\s+(.+)/i, (match) => {
+perEx(/([\d,.]+)%\s+(?:off|\-)\s+(.+)/i, (match) => {
   return (clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100) + ' ' + curreNum(match[2]);
 });
 
-perEx(/(.+)\s+(?:off|\-)\s+([0-9,.]+)%/i, (match) => {
+perEx(/(.+)\s+(?:off|\-)\s+([\d,.]+)%/i, (match) => {
   return (clearNum(match[1]) / 100) * -(+clearNum(match[2]) - 100) + ' ' + curreNum(match[1]);
 });
 
 /* Percentage value: '20% of $10' and '5% of what is 6 EUR' */
 
-perEx(/([0-9,.]+)%\s+of\s+(.+)/i, (match) => {
+perEx(/([\d,.]+)%\s+of\s+(.+)/i, (match) => {
   if (~curreNum(match[2]).indexOf('whatis')) {
     return (clearNum(match[2]) / clearNum(match[1])) * 100 + ' ' + curreNum(match[2]).replace(/whatis/g, '');
   } else {

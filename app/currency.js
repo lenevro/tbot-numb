@@ -128,6 +128,8 @@ bot.onText(/^\/cc\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
         unit = match[1].toUpperCase();
         date = match[2] ? match[2].replace(/for /, '') : 'latest';
 
+  if (!date.match(/\d{4}\-(?:0[1-9]|1[012])\-(?:0[1-9]|[12][0-9]|3[01])/i) && date != 'latest') return;
+
   sendDataCurrency(unit, userId, date);
 });
 
@@ -166,12 +168,14 @@ function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
   }
 }
 
-bot.onText(/^\/cc\s+([0-9,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
+bot.onText(/^\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
   const userId = msg.from.id,
         unitNum = match[1].replace(/\,/g, '.').replace(/\s/g, ''),
         unit = match[2].toUpperCase(),
         unitCon = match[3].toUpperCase(),
         date = match[4] ? match[4].replace(/for /, '') : 'latest';
+
+  if (!date.match(/\d{4}\-(?:0[1-9]|1[012])\-(?:0[1-9]|[12][0-9]|3[01])/i) && date != 'latest') return;
 
   sendCustomDataCurrency(unitNum, unit, unitCon, userId, date);
 });

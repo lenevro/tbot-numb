@@ -34,8 +34,8 @@ function setCronNote(user, time, msg, tz) {
         sendDataCurrency(unit, user, 'latest');
 
         return;
-      } else if (msg.match(/\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+)/)) {
-        const match = msg.match(/\/cc\s+([0-9]+)\s+([a-z]+)\s+to\s+([a-z]+)/),
+      } else if (msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/)) {
+        const match = msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/),
               unitNum = match[1],
               unit = match[2].toUpperCase(),
               unitCon = match[3].toUpperCase();
@@ -73,7 +73,7 @@ db.then(() => {
 
 /* Set note */
 
-bot.onText(/\/note +([0-9]+):([0-9]+)\s+-\s+(.+)/, (msg, match) => {
+bot.onText(/\/note +(\d+):(\d+)\s+-\s+(.+)/, (msg, match) => {
   const userId = msg.from.id,
         timeObj = { h: match[1], m: match[2] },
         noteMsg = match[3];
