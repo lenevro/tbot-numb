@@ -26,9 +26,11 @@ example: /note 08:00 - stand up dude
 example: /note_ls
 
 \/note_rm [number] - remove note,
-example: /note_rm 2`
+example: /note_rm 2
 
-  );
+Read more: leusrox.github.io/numix`, {
+    parse_mode: 'HTML'
+  });
 });
 
 /* Currency */
@@ -59,15 +61,15 @@ bot.on('message', (msg) => {
         'keyboard': [
           ['AUD', 'BGN', 'BRL'],
           ['CAD', 'CHF', 'CNY'],
-          ['CZK', 'DKK', 'GBP'],
-          ['HKD', 'HRK', 'HUF'],
-          ['IDR', 'ILS', 'INR'],
-          ['JPY', 'KRW', 'MXN'],
-          ['MYR', 'NOK', 'NZD'],
-          ['PHP', 'PLN', 'RON'],
-          ['RUB', 'SEK', 'SGD'],
-          ['THB', 'TRY', 'USD'],
-          ['ZAR']
+          ['CZK', 'DKK', 'EUR'],
+          ['GBP', 'HKD', 'HRK'],
+          ['HUF', 'IDR', 'ILS'],
+          ['INR', 'JPY', 'KRW'],
+          ['MXN', 'MYR', 'NOK'],
+          ['NZD', 'PHP', 'PLN'],
+          ['RON', 'RUB', 'SEK'],
+          ['SGD', 'THB', 'TRY'],
+          ['USD', 'ZAR']
         ],
         'resize_keyboard': true,
         'one_time_keyboard': true
