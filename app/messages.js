@@ -13,6 +13,9 @@ example: sqrt(256) * log(10, 2) * 2^4
 \/cc [value] - currency conversion & top exchange rates,
 example: /cc usd
 
+\/co - cryptocurrency rates,
+example: /co
+
 \/tz [city name] - set your timezone,
 example: /tz Moscow
 

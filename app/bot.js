@@ -45,5 +45,6 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
 
 require('./math');
 require('./currency');
+require('./crypto');
 require('./note');
 require('./messages');

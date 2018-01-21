@@ -5,7 +5,9 @@ const bot = require('./bot'),
       notes = db.get('notes'),
       cronNote = require('cron').CronJob,
       sendDataCurrency = require('./currency').sendDataCurrency,
-      sendCustomDataCurrency = require('./currency').sendCustomDataCurrency;
+      sendCustomDataCurrency = require('./currency').sendCustomDataCurrency,
+      sendDataCrypto = require('./crypto').sendDataCrypto,
+      sendSelectedDataCrypto = require('./crypto').sendSelectedDataCrypto;
 
 /* Cron Hash */
 
@@ -41,6 +43,17 @@ function setCronNote(user, time, msg, tz) {
               unitCon = match[3].toUpperCase();
 
         sendCustomDataCurrency(unitNum, unit, unitCon, user, 'latest');
+
+        return;
+      } else if (msg.match(/(\/co)$/)) {
+        sendDataCrypto(user);
+
+        return;
+      } else if (msg.match(/\/co (.+)/)) {
+        const match = msg.match(/\/co (.+)/),
+              unit = match[1].toUpperCase();
+
+        sendSelectedDataCrypto(user, unit);
 
         return;
       }
