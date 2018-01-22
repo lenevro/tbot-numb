@@ -16,6 +16,7 @@ body {
 
     .docs__cap {
       margin-top: 50px;
+      line-height: 1;
       font-size: 18px;
       letter-spacing: 0.3px;
       color: #000;
@@ -26,21 +27,16 @@ body {
           font-size: 38px;
           font-weight: 300;
           letter-spacing: 0;
-          color: #000;
         }
 
-    .docs__text {
-      font-size: 16px;
+    .docs__text p {
+      margin: 15px 0;
+      line-height: 24px;
     }
 
-        .docs__text p {
-          margin: 15px 0;
-          line-height: 24px;
+        .docs__text p a {
+          color: #0BABE0;
         }
-
-            .docs__text p a {
-              color: #0BABE0;
-            }
 
     .docs__op-list {
       margin: 15px 0;
@@ -54,7 +50,7 @@ body {
           position: relative;
           padding: 10px 15px 10px 5px;
           border-top: 1px solid #f2f2f2;
-          font-size: 15px
+          font-size: 15px;
         }
 
             .docs__op-list li:after {
