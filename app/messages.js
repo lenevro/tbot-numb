@@ -2,10 +2,7 @@ const bot = require('./bot');
 
 /* Help */
 
-bot.onText(/(\/help)$/, (msg) => {
-  bot.sendMessage(msg.from.id,
-
-`You can use this service commands:
+const helpMsg = `You can use this service commands:
 
 Inline message - math operations,
 example: sqrt(256) * log(10, 2) * 2^4
@@ -23,7 +20,7 @@ example: /tz Moscow
 example: /time Moscow
 
 \/note [00:00 note] - set note,
-example: /note 08:00 - stand up dude
+example: /note 08:00 stand up dude
 
 \/note_ls - get note list,
 example: /note_ls
@@ -31,7 +28,16 @@ example: /note_ls
 \/note_rm [number] - remove note,
 example: /note_rm 2
 
-Read more: leusrox.github.io/numix`, {
+Read more: leusrox.github.io/numix`;
+
+bot.onText(/(\/start)$/, (msg) => {
+  bot.sendMessage(msg.from.id, helpMsg, {
+    parse_mode: 'HTML'
+  });
+});
+
+bot.onText(/(\/help)$/, (msg) => {
+  bot.sendMessage(msg.from.id, helpMsg, {
     parse_mode: 'HTML'
   });
 });
@@ -89,7 +95,7 @@ bot.onText(/(\/note)$/, (msg) => {
 `You can use this service commands for notes:
 
 \/note [00:00 note] - set note,
-example: /note 08:00 - stand up dude
+example: /note 08:00 stand up dude
 
 \/note_ls - get note list,
 example: /note_ls
