@@ -86,7 +86,7 @@ db.then(() => {
 
 /* Set note */
 
-bot.onText(/\/note +(\d+):(\d+)\s+-\s+(.+)/, (msg, match) => {
+bot.onText(/\/note +(\d+):(\d+)\s+(.+)/, (msg, match) => {
   const userId = msg.from.id,
         timeObj = { h: match[1], m: match[2] },
         noteMsg = match[3];
