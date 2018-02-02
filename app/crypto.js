@@ -1,5 +1,6 @@
 const bot = require('./bot'),
       co = require('cryptocompare'),
+      moment = require('moment-timezone'),
       cronNote = require('cron').CronJob;
 
 global.fetch = require('node-fetch');
@@ -11,17 +12,28 @@ function round(data) {
 }
 
 function getDataCrypto() {
-  co.price('USD', ['BTC', 'ETH', 'XRP', 'BCH', 'ADA'])
-    .then((data) => {
-        coLatest = [
-          `Bitcoin: ${round(1/data.BTC)}$`,
-          `Ethereum: ${round(1/data.ETH)}$`,
-          `Ripple: ${round(1/data.XRP)}$`,
-          `Bitcoin Cash: ${round(1/data.BCH)}$`,
-          `Cardano: ${round(1/data.ADA)}$`
-        ];
-      }
-    )
+  co.priceHistorical('USD', ['BTC', 'ETH', 'XRP', 'BCH', 'ADA'], new Date(moment().subtract(1, 'day').format('YYYY-MM-DD')))
+    .then(data => {
+      return data;
+    })
+    .then(histData => {
+      co.price('USD', ['BTC', 'ETH', 'XRP', 'BCH', 'ADA'])
+        .then((data) => {
+            function formData(unit) {
+              return `${round(1/data[unit])}$ (${round(1/data[unit] - 1/histData[unit])})`;
+            }
+
+            coLatest = [
+              `Bitcoin: ${formData('BTC')}*`,
+              `Ethereum: ${formData('ETH')}`,
+              `Ripple: ${formData('XRP')}`,
+              `Bitcoin Cash: ${formData('BCH')}`,
+              `Cardano: ${formData('ADA')}`
+            ];
+          }
+        )
+        .catch(console.error);
+    })
     .catch(console.error);
 }
 
@@ -47,6 +59,8 @@ function sendDataCrypto(user) {
 
 ${coLatest.join('\n')}
 
+*Difference with the previous day
+
 For another currencies,\nexample: /co XRB`, {
 
     parse_mode: 'HTML'
@@ -60,19 +74,26 @@ bot.onText(/^(\/co)$/, (msg, match) => {
 /* Selected crypto */
 
 function sendSelectedDataCrypto(user, unit) {
-  co.price(unit, 'USD')
-    .then((data) => {
-        return data;
-      }
-    )
-    .then((data) => {
-        bot.sendMessage(user, `${unit}: ${data.USD}$`);
-      }
-    )
-    .catch((error) => {
-        bot.sendMessage(user, error);
-      }
-    );
+  co.priceHistorical(unit, 'USD', new Date(moment().subtract(1, 'day').format('YYYY-MM-DD')))
+    .then(data => {
+      return data;
+    })
+    .then(histData => {
+      co.price(unit, 'USD')
+        .then((data) => {
+            return data;
+          }
+        )
+        .then((data) => {
+            bot.sendMessage(user, `${unit}: ${round(data.USD)}$ (${round(data.USD - histData.USD)})`);
+          }
+        )
+        .catch((error) => {
+            bot.sendMessage(user, error);
+          }
+        );
+    })
+    .catch(console.error)
 }
 
 bot.onText(/^\/co (.+)/, (msg, match) => {
