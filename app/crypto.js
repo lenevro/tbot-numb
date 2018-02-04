@@ -20,7 +20,9 @@ function getDataCrypto() {
       co.price('USD', ['BTC', 'ETH', 'XRP', 'BCH', 'ADA'])
         .then((data) => {
             function formData(unit) {
-              return `${round(1/data[unit])}$ (${round(1/data[unit] - 1/histData[unit])})`;
+              const res = round(1/data[unit] - 1/histData[unit]);
+
+              return `${round(1/data[unit])}$ [` + (res > 0 ? `+${res}` : `${res}`) + ']';
             }
 
             coLatest = [
