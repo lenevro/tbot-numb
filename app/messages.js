@@ -10,6 +10,9 @@ example: sqrt(256) * log(10, 2) * 2^4
 \/cc [value] - currency conversion & top exchange rates,
 example: /cc usd
 
+\/charts - currency charts,
+example: /charts
+
 \/co - cryptocurrency rates,
 example: /co
 
@@ -85,6 +88,27 @@ bot.on('message', (msg) => {
       }
     });
   }
+});
+
+/* Chart */
+
+bot.onText(/(\/charts)$/, (msg) => {
+  const userId = msg.from.id;
+
+  bot.sendMessage(userId, 'Choose pair:', {
+    'reply_markup': {
+      'keyboard': [
+        ['EUR/RUB', 'USD/RUB', 'AUD/JPY'],
+        ['AUD/USD', 'CAD/JPY', 'CHF/JPY'], 
+        ['EUR/AUD', 'EUR/CAD', 'EUR/CHF'], 
+        ['EUR/GBP', 'EUR/JPY', 'EUR/USD'], 
+        ['GBP/CHF', 'GBP/JPY', 'GBP/USD'], 
+        ['USD/CAD', 'USD/CHF', 'USD/JPY']
+      ],
+      'resize_keyboard': true,
+      'one_time_keyboard': true
+    }
+  });
 });
 
 /* Notes */

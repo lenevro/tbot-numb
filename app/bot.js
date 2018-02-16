@@ -47,4 +47,5 @@ require('./math');
 require('./currency');
 require('./crypto');
 require('./note');
+require('./charts');
 require('./messages');
