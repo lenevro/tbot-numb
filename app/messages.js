@@ -1,7 +1,5 @@
 const bot = require('./bot');
 
-/* Help */
-
 const helpMsg = `You can use this service commands:
 
 Inline message - math operations,
@@ -31,7 +29,13 @@ example: /note_ls
 \/note_rm [number] - remove note,
 example: /note_rm 2
 
+\/rate - evaluate the bot ❤️🙏😘
+
 Read more: leusrox.github.io/numix`;
+
+const rateMsg = `If you like this bot, please rate it and write a review about it in the Store Bot: https://telegram.me/storebot?start=numixbot`
+
+/* Help */
 
 bot.onText(/(\/start)$/, (msg) => {
   bot.sendMessage(msg.from.id, helpMsg, {
@@ -128,4 +132,12 @@ example: /note_ls
 example: /note_rm 2`
 
   );
+});
+
+/* Rate */
+
+bot.onText(/(\/rate)$/, (msg) => {
+  bot.sendMessage(msg.from.id, rateMsg, {
+    parse_mode: 'HTML'
+  });
 });
