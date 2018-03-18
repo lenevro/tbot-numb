@@ -43,6 +43,10 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
 
 /* Modules */
 
+let inlineExcept = [];
+
+module.exports.inlineExcept = inlineExcept;
+
 require('./math');
 require('./currency');
 require('./crypto');

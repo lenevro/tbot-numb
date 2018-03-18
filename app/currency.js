@@ -2,7 +2,8 @@ const bot = require('./bot'),
       fetch = require('node-fetch'),
       fx = require('money'),
       moment = require('moment-timezone'),
-      cronNote = require('cron').CronJob;
+      cronNote = require('cron').CronJob,
+      inlineExcept = require('./bot').inlineExcept;
       
 let fxLatest,
     fxYester;
@@ -196,8 +197,9 @@ bot.on('message', msg => {
   }
 });
 
+Array.prototype.push.apply(inlineExcept, currencyList);
+
 /* Modules */
 
 module.exports.sendDataCurrency = sendDataCurrency;
 module.exports.sendCustomDataCurrency = sendCustomDataCurrency;
-module.exports.currencyList = currencyList;

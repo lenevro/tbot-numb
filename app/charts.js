@@ -1,4 +1,5 @@
-const bot = require('./bot');
+const bot = require('./bot'),
+      inlineExcept = require('./bot').inlineExcept;
 
 function sendChartCurrency(unit, user) {
   const src = process.env.CHART + unit.replace(/\//g, '') + '&amount=335&chart_height=340&chart_width=660&grtype=0&tictype=4';
@@ -22,6 +23,4 @@ bot.on('message', msg => {
   }
 });
 
-/* Modules */
-
-module.exports.chartList = chartList;
+Array.prototype.push.apply(inlineExcept, chartList);

@@ -1,7 +1,8 @@
 const bot = require('./bot'),
       math = require('mathjs'),
       currencyList = require('./currency').currencyList,
-      chartList = require('./charts').chartList;
+      chartList = require('./charts').chartList,
+      inlineExcept = require('./bot').inlineExcept;
 
 /* Percentage */
 
@@ -75,7 +76,7 @@ bot.on('message', (msg) => {
     if (userMsg.match(reg)) checkPer = true;
   });
 
-  if (userMsg.match(/^\//) || ~currencyList.indexOf(userMsg.toUpperCase()) || ~chartList.indexOf(userMsg.toUpperCase()) || checkPer) return;
+  if (userMsg.match(/^\//) || ~inlineExcept.indexOf(userMsg.toUpperCase()) || checkPer) return;
 
   /* Go mathjs */
 
