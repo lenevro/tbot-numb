@@ -41,6 +41,24 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
   bot.sendMessage(msg.from.id, time);
 });
 
+/* Random */
+
+const Chance = require('chance'),
+      chance = new Chance();
+
+bot.onText(/(\/random)$/i, (msg, match) => {
+  bot.sendMessage(msg.from.id, chance.integer({min: 0}));
+});
+
+bot.onText(/\/random\s+([\d]+)-([\d]+)/i, (msg, match) => {
+  try {
+    chance.integer({min: +match[1], max: +match[2]})
+    bot.sendMessage(msg.from.id, chance.integer({min: +match[1], max: +match[2]}));
+  } catch (e) {
+    bot.sendMessage(msg.from.id, e.message.replace('Chance: ',''));
+  }
+});
+
 /* Modules */
 
 let inlineExcept = [];

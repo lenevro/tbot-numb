@@ -29,6 +29,9 @@ example: /note_ls
 \/note_rm [number] - remove note,
 example: /note_rm 2
 
+\/random [min]-[max] - get random number,
+example: /random 0-17
+
 \/rate - evaluate the bot ❤️🙏😘
 
 Read more: leusrox.github.io/numix`;
