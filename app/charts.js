@@ -18,7 +18,7 @@ bot.on('message', msg => {
   const userId = msg.from.id,
         unit = msg.text.toUpperCase();
 
-  if (~chartList.indexOf(unit)) {
+  if (chartList.includes(unit)) {
     sendChartCurrency(unit, userId);
   }
 });

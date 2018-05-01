@@ -110,7 +110,7 @@ function sendDataCurrency(unit, user, date) {
     ];
 
     topVal.forEach((item, i) => {
-      if (~item.indexOf(unit)) {
+      if (item.includes(unit)) {
         topVal.splice(i, 1);
       }
     });
@@ -192,7 +192,7 @@ bot.on('message', msg => {
   const userId = msg.from.id,
         unit = msg.text.toUpperCase();
 
-  if (~currencyList.indexOf(unit) && msg.text != 'All currencies') {
+  if (currencyList.includes(unit) && msg.text != 'All currencies') {
     sendDataCurrency(unit, userId, 'latest');
   }
 });

@@ -55,7 +55,7 @@ perEx(/(.+)\s+(?:off|\-)\s+([\d,.]+)%/i, (match) => {
 /* Percentage value: '20% of $10' and '5% of what is 6 EUR' */
 
 perEx(/([\d,.]+)%\s+of\s+(.+)/i, (match) => {
-  if (~curreNum(match[2]).indexOf('what')) {
+  if (curreNum(match[2]).includes('what')) {
     return (clearNum(match[2]) / clearNum(match[1])) * 100 + ' ' + curreNum(match[2]).replace(/what|is|\s/g, '');
   } else {
     return (clearNum(match[1]) * clearNum(match[2])) / 100 + ' ' + curreNum(match[2]);
@@ -149,7 +149,7 @@ bot.on('message', (msg) => {
     if (userMsg.match(reg)) checkPer = true;
   });
 
-  if (userMsg.match(/^\//) || ~inlineExcept.indexOf(userMsg.toUpperCase()) || checkPer) return;
+  if (userMsg.match(/^\//) || inlineExcept.includes(userMsg.toUpperCase()) || checkPer) return;
 
   /* Go mathjs */
 
