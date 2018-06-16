@@ -13,7 +13,7 @@ function round(data) {
 }
 
 function getDataCurrency() {
-  fetch('https://api.fixer.io/latest')
+  fetch('http://data.fixer.io/api/latest?access_key=' + process.env.API)
     .then((resp) => {
         return resp.json();
       }
@@ -28,7 +28,7 @@ function getDataCurrency() {
       }
     )
     .then((date) => {
-        fetch('https://api.fixer.io/' + date)
+        fetch('http://data.fixer.io/api/' + date + '?access_key=' + process.env.API)
           .then((resp) => {
               return resp.json();
             }
@@ -68,7 +68,7 @@ function sendDataCurrency(unit, user, date) {
   let getData;
 
   if (date != 'latest') {
-    fetch('https://api.fixer.io/' + date)
+    fetch('http://data.fixer.io/api/' + date + '?access_key=' + process.env.API)
       .then((resp) => {
           return resp.json();
         }
@@ -103,7 +103,7 @@ function sendDataCurrency(unit, user, date) {
       `🇺🇸 USD: ${getData('USD')}`,
       `🇪🇺 EUR: ${getData('EUR')}`,
       `🇯🇵 JPY: ${getData('JPY')}`,
-      `🇦🇺 AUD: ${getData('AUD')}`,
+      //`🇦🇺 AUD: ${getData('AUD')}`,
       `🇨🇭 CHF: ${getData('CHF')}`,
       `🇨🇦 CAD: ${getData('CAD')}`,
       `🇷🇺 RUB: ${getData('RUB')}`
@@ -142,7 +142,7 @@ bot.onText(/^\/cc\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
 
 function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
   if (date != 'latest') {
-    fetch('https://api.fixer.io/' + date)
+    fetch('http://data.fixer.io/api/' + date + '?access_key=' + process.env.API)
       .then((resp) => {
           return resp.json();
         }
