@@ -1,8 +1,10 @@
 const bot = require('./bot'),
-      inlineExcept = require('./bot').inlineExcept;
+      inlineExcept = require('./bot').inlineExcept,
+      Chance = require('chance'),
+      chance = new Chance();
 
 function sendChartCurrency(unit, user) {
-  const src = process.env.CHART + unit.replace(/\//g, '') + '&amount=335&chart_height=340&chart_width=660&grtype=0&tictype=4';
+  const src = process.env.CHART + unit.replace(/\//g, '') + '&amount=335&chart_height=340&chart_width=660&grtype=0&tictype=4&iId=5?' + chance.string();
 
   bot.sendPhoto(user, src,
     { 
