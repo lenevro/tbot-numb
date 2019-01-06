@@ -1,7 +1,6 @@
 /* Telegram */
 
-const botApi = require('node-telegram-bot-api'),
-      agent = require('socks5-https-client/lib/Agent');
+const botApi = require('node-telegram-bot-api');
       
 let token,
     bot;
@@ -13,7 +12,9 @@ if (process.env.NODE_ENV === 'production') {
   bot.setWebHook(process.env.URL + bot.token);
 } else {
   require('dotenv').config();
-  
+
+  const agent = require('socks5-https-client/lib/Agent');
+
   token = process.env.BOT_TOKEN_LOCAL;
 
   bot = new botApi(token, { 
