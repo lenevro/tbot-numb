@@ -48,7 +48,7 @@ getDataCurrency();
 /* Set Cron */
 
 new cronNote({
-  cronTime: '00 59 * * * *',
+  cronTime: '0 0 */2 * * *',
   onTick() {
     getDataCurrency();
   },
