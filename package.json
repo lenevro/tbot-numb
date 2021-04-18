@@ -19,7 +19,7 @@
     "moment": "^2.19.0",
     "moment-timezone": "^0.5.13",
     "money": "^0.2.0",
-    "monk": "^6.0.5",
+    "monk": "7.3.4",
     "node-fetch": "^1.7.3",
     "node-telegram-bot-api": "^0.27.1"
   },
