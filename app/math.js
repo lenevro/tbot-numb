@@ -156,7 +156,7 @@ bot.on('message', (msg) => {
   let result;
 
   try {
-    result = math.eval(msg.text);
+    result = math.evaluate(msg.text);
   } catch (e) {
     bot.sendMessage(userId, e.message);
 
