@@ -24,7 +24,6 @@
     "node-telegram-bot-api": "^0.27.1"
   },
   "devDependencies": {
-    "dotenv": "^4.0.0",
-    "socks5-https-client": "^1.2.1"
+    "dotenv": "^4.0.0"
   }
 }
