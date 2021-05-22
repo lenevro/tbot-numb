@@ -5,34 +5,34 @@ const helpMsg = `You can use this service commands:
 Inline message - math operations,
 example: sqrt(256) * log(10, 2) * 2^4
 
-\/cc [value] - currency conversion & top exchange rates,
+/cc [value] - currency conversion & top exchange rates,
 example: /cc usd
 
-\/charts - currency charts,
+/charts - currency charts,
 example: /charts
 
-\/co - cryptocurrency rates,
+/co - cryptocurrency rates,
 example: /co
 
-\/tz [city name] - set your timezone,
+/tz [city name] - set your timezone,
 example: /tz Moscow
 
-\/time [city name] - get time for the city,
+/time [city name] - get time for the city,
 example: /time Moscow
 
-\/note [00:00 note] - set note,
+/note [00:00 note] - set note,
 example: /note 08:00 stand up dude
 
-\/note_ls - get note list,
+/note_ls - get note list,
 example: /note_ls
 
-\/note_rm [number] - remove note,
+/note_rm [number] - remove note,
 example: /note_rm 2
 
-\/random [min]-[max] - get random number,
+/random [min]-[max] - get random number,
 example: /random 0-17
 
-\/rate - evaluate the bot ❤️🙏😘
+/rate - evaluate the bot ❤️🙏😘
 
 Read more: leusrox.github.io/numix`;
 
@@ -74,7 +74,7 @@ bot.onText(/(\/cc)$/, (msg) => {
 bot.on('message', (msg) => {
   const userId = msg.from.id;
 
-  if (msg.text == 'All currencies') {
+  if (msg.text === 'All currencies') {
     bot.sendMessage(userId, 'Choose currency:', {
       reply_markup: {
         keyboard: [
@@ -125,13 +125,13 @@ bot.onText(/(\/note)$/, (msg) => {
 
     `You can use this service commands for notes:
 
-\/note [00:00 note] - set note,
+/note [00:00 note] - set note,
 example: /note 08:00 stand up dude
 
-\/note_ls - get note list,
+/note_ls - get note list,
 example: /note_ls
 
-\/note_rm [number] - remove note,
+/note_rm [number] - remove note,
 example: /note_rm 2`);
 });
 

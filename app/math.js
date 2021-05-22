@@ -1,8 +1,7 @@
 const math = require('mathjs');
 const bot = require('./bot');
-const currencyList = require('./currency').currencyList;
-const chartList = require('./charts').chartList;
-const inlineExcept = require('./bot').inlineExcept;
+
+const inlineExcept = bot.inlineExcept;
 
 const regList = [];
 
@@ -25,7 +24,7 @@ function perEx(reg, res) {
 }
 
 function clearNum(match) {
-  return match.match(/([\d,.])/g) ? match.match(/([\d,.])/g).join('').replace(/\,/g, '.') : '';
+  return match.match(/([\d,.])/g) ? match.match(/([\d,.])/g).join('').replace(/,/g, '.') : '';
 }
 
 function curreNum(match) {
@@ -40,9 +39,9 @@ perEx(/(.+)\s+(?:on|\+)\s+([\d,.]+)%/i, (match) => `${(clearNum(match[1]) / 100)
 
 /* Substracting percentage: '6% off 40 EUR' and '40 EUR off 6%' */
 
-perEx(/([\d,.]+)%\s+(?:off|\-)\s+(.+)/i, (match) => `${(clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100)} ${curreNum(match[2])}`);
+perEx(/([\d,.]+)%\s+(?:off|-)\s+(.+)/i, (match) => `${(clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100)} ${curreNum(match[2])}`);
 
-perEx(/(.+)\s+(?:off|\-)\s+([\d,.]+)%/i, (match) => `${(clearNum(match[1]) / 100) * -(+clearNum(match[2]) - 100)} ${curreNum(match[1])}`);
+perEx(/(.+)\s+(?:off|-)\s+([\d,.]+)%/i, (match) => `${(clearNum(match[1]) / 100) * -(+clearNum(match[2]) - 100)} ${curreNum(match[1])}`);
 
 /* Percentage value: '20% of $10' and '5% of what is 6 EUR' */
 
@@ -79,9 +78,9 @@ bot.onText(/(\/em)$/, (msg) => {
 });
 
 bot.onText(/^\/em\s+([0-9.,]+)/, (msg, match) => {
-  em = match[1].replace(/\,/g, '.');
+  em = match[1].replace(/,/g, '.');
 
-  if (em[--em.length] == '.') em = em.replace(/.$/g, '.0');
+  if (em[--em.length] === '.') em = em.replace(/.$/g, '.0');
 
   bot.sendMessage(msg.from.id, `em = ${em}`);
 });
@@ -91,9 +90,9 @@ bot.onText(/(\/ppi)$/, (msg) => {
 });
 
 bot.onText(/^\/ppi\s+([0-9.,]+)/, (msg, match) => {
-  ppi = match[1].replace(/\,/g, '.');
+  ppi = match[1].replace(/,/g, '.');
 
-  if (ppi[--em.length] == '.') ppi = ppi.replace(/.$/g, '.0');
+  if (ppi[--em.length] === '.') ppi = ppi.replace(/.$/g, '.0');
 
   bot.sendMessage(msg.from.id, `ppi = ${ppi}`);
 });

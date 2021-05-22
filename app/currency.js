@@ -1,9 +1,10 @@
-const bot = require('./bot');
 const fetch = require('node-fetch');
 const fx = require('money');
 const moment = require('moment-timezone');
-const cronNote = require('cron').CronJob;
-const inlineExcept = require('./bot').inlineExcept;
+const CronNote = require('cron').CronJob;
+const bot = require('./bot');
+
+const inlineExcept = bot.inlineExcept;
 
 let fxLatest;
 let fxYester;
@@ -39,7 +40,7 @@ getDataCurrency();
 
 /* Set Cron */
 
-new cronNote({
+const cronNote = new CronNote({
   cronTime: '0 0 */2 * * *',
   onTick() {
     getDataCurrency();
@@ -47,6 +48,8 @@ new cronNote({
   start: true,
   timeZone: 'Europe/Brussels',
 });
+
+cronNote.start();
 
 /* Bot Msg */
 
@@ -59,7 +62,7 @@ new cronNote({
 function sendDataCurrency(unit, user, date) {
   let getData;
 
-  if (date != 'latest') {
+  if (date !== 'latest') {
     fetch(`http://data.fixer.io/api/${date}?access_key=${process.env.API}`)
       .then((resp) => resp.json())
       .then((data) => {
@@ -103,7 +106,7 @@ function sendDataCurrency(unit, user, date) {
     });
 
     const result = `<b>Top ${unit} Exchange Rates</b>\n\n${topVal.join('\n')
-    }${date != 'latest' ? `\n\n(Rates for ${date})` : `\n\n(Last update: ${fxLatest.date})`}`;
+    }${date !== 'latest' ? `\n\n(Rates for ${date})` : `\n\n(Last update: ${fxLatest.date})`}`;
 
     bot.sendMessage(user, result, {
       parse_mode: 'HTML',
@@ -114,9 +117,9 @@ function sendDataCurrency(unit, user, date) {
 bot.onText(/^\/cc\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
   const userId = msg.from.id;
   const unit = match[1].toUpperCase();
-  date = match[2] ? match[2].replace(/for /, '') : 'latest';
+  const date = match[2] ? match[2].replace(/for /, '') : 'latest';
 
-  if (!date.match(/\d{4}\-(?:0[1-9]|1[012])\-(?:0[1-9]|[12][0-9]|3[01])/i) && date != 'latest') return;
+  if (!date.match(/\d{4}-(?:0[1-9]|1[012])-(?:0[1-9]|[12][0-9]|3[01])/i) && date !== 'latest') return;
 
   sendDataCurrency(unit, userId, date);
 });
@@ -128,7 +131,7 @@ bot.onText(/^\/cc\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
 */
 
 function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
-  if (date != 'latest') {
+  if (date !== 'latest') {
     fetch(`http://data.fixer.io/api/${date}?access_key=${process.env.API}`)
       .then((resp) => resp.json())
       .then((data) => {
@@ -146,7 +149,7 @@ function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
     const result = fx(unitNum).from(unit).to(unitCon);
 
     const buildMsg = `${unitNum} ${unit} = ${round(result)} ${unitCon}${
-      date != 'latest' ? `\n(Rate for ${date})` : `\n(Last update: ${fxLatest.date})`}`;
+      date !== 'latest' ? `\n(Rate for ${date})` : `\n(Last update: ${fxLatest.date})`}`;
 
     bot.sendMessage(user, buildMsg);
   }
@@ -154,12 +157,12 @@ function sendCustomDataCurrency(unitNum, unit, unitCon, user, date) {
 
 bot.onText(/^\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+) *(.+[^a-z]+)*/i, (msg, match) => {
   const userId = msg.from.id;
-  const unitNum = match[1].replace(/\,/g, '.').replace(/\s/g, '');
+  const unitNum = match[1].replace(/,/g, '.').replace(/\s/g, '');
   const unit = match[2].toUpperCase();
   const unitCon = match[3].toUpperCase();
   const date = match[4] ? match[4].replace(/for /, '') : 'latest';
 
-  if (!date.match(/\d{4}\-(?:0[1-9]|1[012])\-(?:0[1-9]|[12][0-9]|3[01])/i) && date != 'latest') return;
+  if (!date.match(/\d{4}-(?:0[1-9]|1[012])-(?:0[1-9]|[12][0-9]|3[01])/i) && date !== 'latest') return;
 
   sendCustomDataCurrency(unitNum, unit, unitCon, userId, date);
 });
@@ -175,7 +178,7 @@ bot.on('message', msg => {
   const userId = msg.from.id;
   const unit = msg.text.toUpperCase();
 
-  if (currencyList.includes(unit) && msg.text != 'All currencies') {
+  if (currencyList.includes(unit) && msg.text !== 'All currencies') {
     sendDataCurrency(unit, userId, 'latest');
   }
 });

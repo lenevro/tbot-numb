@@ -1,6 +1,7 @@
-const bot = require('./bot');
-const inlineExcept = require('./bot').inlineExcept;
 const Chance = require('chance');
+const bot = require('./bot');
+
+const inlineExcept = bot.inlineExcept;
 
 const chance = new Chance();
 

@@ -1,7 +1,7 @@
-const bot = require('./bot');
 const co = require('cryptocompare');
 const moment = require('moment-timezone');
-const cronNote = require('cron').CronJob;
+const CronNote = require('cron').CronJob;
+const bot = require('./bot');
 
 global.fetch = require('node-fetch');
 
@@ -40,7 +40,7 @@ getDataCrypto();
 
 /* Set Cron */
 
-new cronNote({
+const cronNote = new CronNote({
   cronTime: '00 */1 * * * *',
   onTick() {
     getDataCrypto();
@@ -48,6 +48,8 @@ new cronNote({
   start: true,
   timeZone: 'Europe/Brussels',
 });
+
+cronNote.start();
 
 /* Data crypto */
 
@@ -66,7 +68,7 @@ For another currencies,\nexample: /co XRB`, {
     });
 }
 
-bot.onText(/^(\/co)$/, (msg, match) => {
+bot.onText(/^(\/co)$/, (msg) => {
   sendDataCrypto(msg.from.id);
 });
 

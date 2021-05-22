@@ -1,14 +1,18 @@
 const monk = require('monk');
-const bot = require('./bot');
 
 const dbUri = process.env.MONGO || 'mongodb://localhost:27017/notes';
 const db = monk(dbUri);
 const notes = db.get('notes');
-const cronNote = require('cron').CronJob;
+const CronNote = require('cron').CronJob;
+const moment = require('moment-timezone');
+const cityTimezones = require('city-timezones');
+
 const sendDataCurrency = require('./currency').sendDataCurrency;
 const sendCustomDataCurrency = require('./currency').sendCustomDataCurrency;
 const sendDataCrypto = require('./crypto').sendDataCrypto;
 const sendSelectedDataCrypto = require('./crypto').sendSelectedDataCrypto;
+
+const bot = require('./bot');
 
 /* Cron Hash */
 
@@ -27,7 +31,7 @@ function stopNote(user, time, msg) {
 function setCronNote(user, time, msg, tz) {
   const noteTime = `00 ${time.m} ${time.h} * * *`;
 
-  const note = new cronNote({
+  const note = new CronNote({
     cronTime: noteTime,
     onTick() {
       if (msg.match(/\/cc\s+([a-z]+)/)) {
@@ -71,12 +75,12 @@ function setCronNote(user, time, msg, tz) {
 /* Set note from database */
 
 db.then(() => {
-  notes.find({}).each((item) => {
-    const user = item.name;
-    const tz = item.tz;
+  notes.find({}).each((note) => {
+    const user = note.name;
+    const tz = note.tz;
 
-    if (item.notifications) {
-      item.notifications.forEach((item) => {
+    if (note.notifications) {
+      note.notifications.forEach((item) => {
         setCronNote(user, item[0], item[1], tz);
       });
     }
@@ -116,7 +120,7 @@ function getNoteList(userId) {
   let noteNum = 0;
 
   notes.findOne({ name: userId }).then((user) => {
-    if (user && user.notifications && user.notifications != 0) {
+    if (user && user.notifications && user.notifications !== 0) {
       noteList = user.notifications.map((note) => `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`);
 
       bot.sendMessage(userId, `<b>Your note list:</b>\n\n${noteList.join('\n')}\n\nTimezone: ${user.timezone}`, {
@@ -128,7 +132,7 @@ function getNoteList(userId) {
   });
 }
 
-bot.onText(/\/note_ls/, (msg, match) => {
+bot.onText(/\/note_ls/, (msg) => {
   getNoteList(msg.from.id);
 });
 
@@ -152,7 +156,7 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
   notes.findOne({ name: userId }).then((user) => {
     const noteList = user.notifications;
 
-    if (match[1] == 'all') {
+    if (match[1] === 'all') {
       noteList.forEach((item) => {
         delNote(item);
       });
@@ -168,10 +172,7 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
 
 /* Time zone */
 
-const moment = require('moment-timezone');
-const cityTimezones = require('city-timezones');
-
-bot.onText(/(\/tz)$/, (msg, match) => {
+bot.onText(/(\/tz)$/, (msg) => {
   const userId = msg.from.id;
 
   notes.findOne({ name: userId }).then((user) => {
@@ -193,7 +194,7 @@ bot.onText(/\/tz (.+)/, (msg, match) => {
 
   if (checkZone) {
     timezone = checkZone.name;
-  } else if (checkCity.length != 0) {
+  } else if (checkCity.length !== 0) {
     timezone = checkCity[0].timezone;
   } else {
     timezone = false;
