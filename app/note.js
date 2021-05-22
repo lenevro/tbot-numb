@@ -1,13 +1,14 @@
-const bot = require('./bot'),
-      monk = require('monk'),
-      dbUri = process.env.MONGO || 'mongodb://localhost:27017/notes',
-      db = monk(dbUri),
-      notes = db.get('notes'),
-      cronNote = require('cron').CronJob,
-      sendDataCurrency = require('./currency').sendDataCurrency,
-      sendCustomDataCurrency = require('./currency').sendCustomDataCurrency,
-      sendDataCrypto = require('./crypto').sendDataCrypto,
-      sendSelectedDataCrypto = require('./crypto').sendSelectedDataCrypto;
+const monk = require('monk');
+const bot = require('./bot');
+
+const dbUri = process.env.MONGO || 'mongodb://localhost:27017/notes';
+const db = monk(dbUri);
+const notes = db.get('notes');
+const cronNote = require('cron').CronJob;
+const sendDataCurrency = require('./currency').sendDataCurrency;
+const sendCustomDataCurrency = require('./currency').sendCustomDataCurrency;
+const sendDataCrypto = require('./crypto').sendDataCrypto;
+const sendSelectedDataCrypto = require('./crypto').sendSelectedDataCrypto;
 
 /* Cron Hash */
 
@@ -19,7 +20,7 @@ function getNoteId(user, time, msg) {
 
 function stopNote(user, time, msg) {
   if (cronNoteHash.has(getNoteId(user, time, msg))) {
-      cronNoteHash.get(getNoteId(user, time, msg)).stop();
+    cronNoteHash.get(getNoteId(user, time, msg)).stop();
   }
 }
 
@@ -30,28 +31,28 @@ function setCronNote(user, time, msg, tz) {
     cronTime: noteTime,
     onTick() {
       if (msg.match(/\/cc\s+([a-z]+)/)) {
-        const match = msg.match(/\/cc\s+([a-z]+)/),
-              unit = match[1].toUpperCase();
+        const match = msg.match(/\/cc\s+([a-z]+)/);
+        const unit = match[1].toUpperCase();
 
         sendDataCurrency(unit, user, 'latest');
 
         return;
-      } else if (msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/)) {
-        const match = msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/),
-              unitNum = match[1],
-              unit = match[2].toUpperCase(),
-              unitCon = match[3].toUpperCase();
+      } if (msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/)) {
+        const match = msg.match(/\/cc\s+([\d,.\s]+)\s+([a-z]+)\s+to\s+([a-z]+)/);
+        const unitNum = match[1];
+        const unit = match[2].toUpperCase();
+        const unitCon = match[3].toUpperCase();
 
         sendCustomDataCurrency(unitNum, unit, unitCon, user, 'latest');
 
         return;
-      } else if (msg.match(/(\/co)$/)) {
+      } if (msg.match(/(\/co)$/)) {
         sendDataCrypto(user);
 
         return;
-      } else if (msg.match(/\/co (.+)/)) {
-        const match = msg.match(/\/co (.+)/),
-              unit = match[1].toUpperCase();
+      } if (msg.match(/\/co (.+)/)) {
+        const match = msg.match(/\/co (.+)/);
+        const unit = match[1].toUpperCase();
 
         sendSelectedDataCrypto(user, unit);
 
@@ -61,7 +62,7 @@ function setCronNote(user, time, msg, tz) {
       bot.sendMessage(user, msg);
     },
     start: true,
-    timeZone: tz
+    timeZone: tz,
   });
 
   cronNoteHash.set(getNoteId(user, time, msg), note);
@@ -71,8 +72,8 @@ function setCronNote(user, time, msg, tz) {
 
 db.then(() => {
   notes.find({}).each((item) => {
-    const user = item.name,
-          tz = item.tz;
+    const user = item.name;
+    const tz = item.tz;
 
     if (item.notifications) {
       item.notifications.forEach((item) => {
@@ -87,17 +88,17 @@ db.then(() => {
 /* Set note */
 
 bot.onText(/\/note +(\d+):(\d+)\s+(.+)/, (msg, match) => {
-  const userId = msg.from.id,
-        timeObj = { h: match[1], m: match[2] },
-        noteMsg = match[3];
+  const userId = msg.from.id;
+  const timeObj = { h: match[1], m: match[2] };
+  const noteMsg = match[3];
 
   notes.findOne({ name: userId }).then((user) => {
     if (user && user.timezone) {
       notes.update(
         { name: userId },
-        { 
-          $push: { notifications: [timeObj, noteMsg] }
-        }
+        {
+          $push: { notifications: [timeObj, noteMsg] },
+        },
       ).then(() => {
         setCronNote(userId, timeObj, noteMsg, user.timezone);
         getNoteList(userId);
@@ -111,17 +112,15 @@ bot.onText(/\/note +(\d+):(\d+)\s+(.+)/, (msg, match) => {
 /* Get note list */
 
 function getNoteList(userId) {
-  let noteList,
-      noteNum = 0;
- 
+  let noteList;
+  let noteNum = 0;
+
   notes.findOne({ name: userId }).then((user) => {
     if (user && user.notifications && user.notifications != 0) {
-      noteList = user.notifications.map((note) => {
-        return `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`;
-      });
+      noteList = user.notifications.map((note) => `${++noteNum}. ${note[0].h}:${note[0].m} - ${note[1]}`);
 
-      bot.sendMessage(userId, '<b>Your note list:</b>\n\n' + noteList.join('\n') + '\n\nTimezone: ' + user.timezone, {
-        parse_mode: 'HTML'
+      bot.sendMessage(userId, `<b>Your note list:</b>\n\n${noteList.join('\n')}\n\nTimezone: ${user.timezone}`, {
+        parse_mode: 'HTML',
       });
     } else {
       bot.sendMessage(userId, 'List of notes is empty');
@@ -136,15 +135,15 @@ bot.onText(/\/note_ls/, (msg, match) => {
 /* Remove note */
 
 bot.onText(/\/note_rm (.+)/, (msg, match) => {
-  const userId = msg.from.id,
-        noteNum = match[1] - 1;
+  const userId = msg.from.id;
+  const noteNum = match[1] - 1;
 
   function delNote(num) {
     notes.update(
-      { name: userId }, 
-      { 
-        $pull: { notifications: num }
-      }
+      { name: userId },
+      {
+        $pull: { notifications: num },
+      },
     ).then(() => {
       stopNote(userId, num[0], num[1]);
     });
@@ -169,15 +168,15 @@ bot.onText(/\/note_rm (.+)/, (msg, match) => {
 
 /* Time zone */
 
-const moment = require('moment-timezone'),
-      cityTimezones = require('city-timezones');
+const moment = require('moment-timezone');
+const cityTimezones = require('city-timezones');
 
 bot.onText(/(\/tz)$/, (msg, match) => {
   const userId = msg.from.id;
 
   notes.findOne({ name: userId }).then((user) => {
     if (user && user.timezone) {
-      bot.sendMessage(userId, 'Your timezone: ' + user.timezone);
+      bot.sendMessage(userId, `Your timezone: ${user.timezone}`);
     } else {
       bot.sendMessage(userId, 'Please set your timezone, \nexample: /tz Moscow');
     }
@@ -185,10 +184,10 @@ bot.onText(/(\/tz)$/, (msg, match) => {
 });
 
 bot.onText(/\/tz (.+)/, (msg, match) => {
-  const userId = msg.from.id,
-        userCity = match[1].charAt(0).toUpperCase() + match[1].slice(1),
-        checkCity = cityTimezones.lookupViaCity(userCity),
-        checkZone = moment.tz.zone(userCity);
+  const userId = msg.from.id;
+  const userCity = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+  const checkCity = cityTimezones.lookupViaCity(userCity);
+  const checkZone = moment.tz.zone(userCity);
 
   let timezone;
 
@@ -205,9 +204,9 @@ bot.onText(/\/tz (.+)/, (msg, match) => {
       if (user) {
         notes.update(
           { name: userId },
-          { 
-            $set: { timezone: timezone }
-          }
+          {
+            $set: { timezone },
+          },
         ).then(() => {
           if (user.notifications) {
             user.notifications.forEach((item) => {
@@ -216,16 +215,16 @@ bot.onText(/\/tz (.+)/, (msg, match) => {
             });
           }
 
-          bot.sendMessage(userId, 'Your timezone: ' + timezone);
+          bot.sendMessage(userId, `Your timezone: ${timezone}`);
         });
       } else {
         notes.insert(
           {
             name: userId,
-            timezone: timezone
-          }
+            timezone,
+          },
         ).then(() => {
-          bot.sendMessage(userId, 'Your timezone: ' + timezone);
+          bot.sendMessage(userId, `Your timezone: ${timezone}`);
         });
       }
     });

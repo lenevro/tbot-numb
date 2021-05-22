@@ -1,24 +1,24 @@
-const bot = require('./bot'),
-      inlineExcept = require('./bot').inlineExcept,
-      Chance = require('chance'),
-      chance = new Chance();
+const bot = require('./bot');
+const inlineExcept = require('./bot').inlineExcept;
+const Chance = require('chance');
+
+const chance = new Chance();
 
 function sendChartCurrency(unit, user) {
-  const src = process.env.CHART + unit.replace(/\//g, '') + '&amount=335&chart_height=340&chart_width=660&grtype=0&tictype=4&iId=5?' + chance.string();
+  const src = `${process.env.CHART + unit.replace(/\//g, '')}&amount=335&chart_height=340&chart_width=660&grtype=0&tictype=4&iId=5?${chance.string()}`;
 
   bot.sendPhoto(user, src,
-    { 
-      caption: unit
-    }
-  );
+    {
+      caption: unit,
+    });
 }
 
 const chartList = ['EUR/RUB', 'USD/RUB', 'AUD/JPY', 'AUD/USD', 'CAD/JPY', 'CHF/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF',
-                   'EUR/GBP', 'EUR/JPY', 'EUR/USD', 'GBP/CHF', 'GBP/JPY', 'GBP/USD', 'USD/CAD', 'USD/CHF', 'USD/JPY'];
+  'EUR/GBP', 'EUR/JPY', 'EUR/USD', 'GBP/CHF', 'GBP/JPY', 'GBP/USD', 'USD/CAD', 'USD/CHF', 'USD/JPY'];
 
 bot.on('message', msg => {
-  const userId = msg.from.id,
-        unit = msg.text.toUpperCase();
+  const userId = msg.from.id;
+  const unit = msg.text.toUpperCase();
 
   if (chartList.includes(unit)) {
     sendChartCurrency(unit, userId);

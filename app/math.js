@@ -1,17 +1,17 @@
-const bot = require('./bot'),
-      math = require('mathjs'),
-      currencyList = require('./currency').currencyList,
-      chartList = require('./charts').chartList,
-      inlineExcept = require('./bot').inlineExcept;
+const math = require('mathjs');
+const bot = require('./bot');
+const currencyList = require('./currency').currencyList;
+const chartList = require('./charts').chartList;
+const inlineExcept = require('./bot').inlineExcept;
 
-let regList = [];
+const regList = [];
 
 function round(data) {
   return Math.round(data * 1000) / 1000;
 }
 
-/* 
-  Percentage 
+/*
+  Percentage
 */
 
 function perEx(reg, res) {
@@ -34,41 +34,30 @@ function curreNum(match) {
 
 /* Adding percentage: '5% on $30' and '$30 on 5%' */
 
-perEx(/([\d,.]+)%\s+(?:on|\+)\s+(.+)/i, (match) => {
-  return (clearNum(match[2]) / 100) * (+clearNum(match[1]) + 100) + ' ' + curreNum(match[2]);
-});
+perEx(/([\d,.]+)%\s+(?:on|\+)\s+(.+)/i, (match) => `${(clearNum(match[2]) / 100) * (+clearNum(match[1]) + 100)} ${curreNum(match[2])}`);
 
-perEx(/(.+)\s+(?:on|\+)\s+([\d,.]+)%/i, (match) => {
-  return (clearNum(match[1]) / 100) * (+clearNum(match[2]) + 100) + ' ' + curreNum(match[1]);
-});
+perEx(/(.+)\s+(?:on|\+)\s+([\d,.]+)%/i, (match) => `${(clearNum(match[1]) / 100) * (+clearNum(match[2]) + 100)} ${curreNum(match[1])}`);
 
 /* Substracting percentage: '6% off 40 EUR' and '40 EUR off 6%' */
 
-perEx(/([\d,.]+)%\s+(?:off|\-)\s+(.+)/i, (match) => {
-  return (clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100) + ' ' + curreNum(match[2]);
-});
+perEx(/([\d,.]+)%\s+(?:off|\-)\s+(.+)/i, (match) => `${(clearNum(match[2]) / 100) * -(+clearNum(match[1]) - 100)} ${curreNum(match[2])}`);
 
-perEx(/(.+)\s+(?:off|\-)\s+([\d,.]+)%/i, (match) => {
-  return (clearNum(match[1]) / 100) * -(+clearNum(match[2]) - 100) + ' ' + curreNum(match[1]);
-});
+perEx(/(.+)\s+(?:off|\-)\s+([\d,.]+)%/i, (match) => `${(clearNum(match[1]) / 100) * -(+clearNum(match[2]) - 100)} ${curreNum(match[1])}`);
 
 /* Percentage value: '20% of $10' and '5% of what is 6 EUR' */
 
 perEx(/([\d,.]+)%\s+of\s+(.+)/i, (match) => {
   if (curreNum(match[2]).includes('what')) {
-    return (clearNum(match[2]) / clearNum(match[1])) * 100 + ' ' + curreNum(match[2]).replace(/what|is|\s/g, '');
-  } else {
-    return (clearNum(match[1]) * clearNum(match[2])) / 100 + ' ' + curreNum(match[2]);
+    return `${(clearNum(match[2]) / clearNum(match[1])) * 100} ${curreNum(match[2]).replace(/what|is|\s/g, '')}`;
   }
+  return `${(clearNum(match[1]) * clearNum(match[2])) / 100} ${curreNum(match[2])}`;
 });
 
 /* Percentage value of one value relative to another: $50 as a % of $100 */
 
-perEx(/([^a-z]+)\s+as\s+a\s+%\s+of\s+([^a-z]+)/i, (match) => {
-  return clearNum(match[1]) / (clearNum(match[2]) / 100) + '%';
-});
+perEx(/([^a-z]+)\s+as\s+a\s+%\s+of\s+([^a-z]+)/i, (match) => `${clearNum(match[1]) / (clearNum(match[2]) / 100)}%`);
 
-/* 
+/*
   CSS
 */
 
@@ -80,13 +69,13 @@ function cssEx(reg, res) {
   });
 }
 
-let em = 16,
-    ppi = 96;
+let em = 16;
+let ppi = 96;
 
 /* em & ppi */
 
 bot.onText(/(\/em)$/, (msg) => {
-  bot.sendMessage(msg.from.id, 'em = ' + em);
+  bot.sendMessage(msg.from.id, `em = ${em}`);
 });
 
 bot.onText(/^\/em\s+([0-9.,]+)/, (msg, match) => {
@@ -94,11 +83,11 @@ bot.onText(/^\/em\s+([0-9.,]+)/, (msg, match) => {
 
   if (em[--em.length] == '.') em = em.replace(/.$/g, '.0');
 
-  bot.sendMessage(msg.from.id, 'em = ' + em);
+  bot.sendMessage(msg.from.id, `em = ${em}`);
 });
 
 bot.onText(/(\/ppi)$/, (msg) => {
-  bot.sendMessage(msg.from.id, 'ppi = ' + ppi);
+  bot.sendMessage(msg.from.id, `ppi = ${ppi}`);
 });
 
 bot.onText(/^\/ppi\s+([0-9.,]+)/, (msg, match) => {
@@ -106,40 +95,32 @@ bot.onText(/^\/ppi\s+([0-9.,]+)/, (msg, match) => {
 
   if (ppi[--em.length] == '.') ppi = ppi.replace(/.$/g, '.0');
 
-  bot.sendMessage(msg.from.id, 'ppi = ' + ppi);
+  bot.sendMessage(msg.from.id, `ppi = ${ppi}`);
 });
 
 /* em: '1.2 em in px' */
 
-cssEx(/([\d,.]+)(?:\s+)?em\s+in\s+px/i, (match) => {
-  return round(match[1] * em) + `\n\n/em = ${em}`;
-});
+cssEx(/([\d,.]+)(?:\s+)?em\s+in\s+px/i, (match) => `${round(match[1] * em)}\n\n/em = ${em}`);
 
 /* pt: '1.2 pt in px' */
 
-cssEx(/([\d,.]+)(?:\s+)?pt\s+in\s+px/i, (match) => {
-  return round((match[1] * ppi) / 72) + `\n\n/ppi = ${ppi}`;
-});
+cssEx(/([\d,.]+)(?:\s+)?pt\s+in\s+px/i, (match) => `${round((match[1] * ppi) / 72)}\n\n/ppi = ${ppi}`);
 
 /* inch: '1 inch in px' */
 
-cssEx(/([\d,.]+)(?:\s+)?inch\s+in\s+px/i, (match) => {
-  return round(match[1] * ppi) + `\n\n/ppi = ${ppi}`;
-});
+cssEx(/([\d,.]+)(?:\s+)?inch\s+in\s+px/i, (match) => `${round(match[1] * ppi)}\n\n/ppi = ${ppi}`);
 
 /* cm: '1.2 cm in px' */
 
-cssEx(/([\d,.]+)(?:\s+)?cm\s+in\s+px/i, (match) => {
-  return round(match[1] * (ppi / 2.54)) + `\n\n/ppi = ${ppi}`;
-});
+cssEx(/([\d,.]+)(?:\s+)?cm\s+in\s+px/i, (match) => `${round(match[1] * (ppi / 2.54))}\n\n/ppi = ${ppi}`);
 
-/* 
-  Math 
+/*
+  Math
 */
 
 bot.on('message', (msg) => {
-  const userMsg = msg.text,
-        userId = msg.from.id;
+  const userMsg = msg.text;
+  const userId = msg.from.id;
 
   let checkPer;
 
@@ -163,7 +144,7 @@ bot.on('message', (msg) => {
     return;
   }
 
-  if (typeof result == 'object') return;
+  if (typeof result === 'object') return;
 
   bot.sendMessage(userId, result);
 });

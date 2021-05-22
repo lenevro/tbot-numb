@@ -36,19 +36,19 @@ example: /random 0-17
 
 Read more: leusrox.github.io/numix`;
 
-const rateMsg = `If you like this bot, please rate it and write a review about it in the Store Bot: https://telegram.me/storebot?start=numixbot`
+const rateMsg = 'If you like this bot, please rate it and write a review about it in the Store Bot: https://telegram.me/storebot?start=numixbot';
 
 /* Help */
 
 bot.onText(/(\/start)$/, (msg) => {
   bot.sendMessage(msg.from.id, helpMsg, {
-    parse_mode: 'HTML'
+    parse_mode: 'HTML',
   });
 });
 
 bot.onText(/(\/help)$/, (msg) => {
   bot.sendMessage(msg.from.id, helpMsg, {
-    parse_mode: 'HTML'
+    parse_mode: 'HTML',
   });
 });
 
@@ -58,16 +58,16 @@ bot.onText(/(\/cc)$/, (msg) => {
   const userId = msg.from.id;
 
   bot.sendMessage(userId, 'Choose currency:', {
-    'reply_markup': {
-      'keyboard': [
+    reply_markup: {
+      keyboard: [
         ['USD', 'EUR', 'JPY'],
         ['AUD', 'CHF', 'CAD'],
         ['RUB'],
-        ['All currencies']
+        ['All currencies'],
       ],
-      'resize_keyboard': true,
-      'one_time_keyboard': true
-    }
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
   });
 });
 
@@ -76,8 +76,8 @@ bot.on('message', (msg) => {
 
   if (msg.text == 'All currencies') {
     bot.sendMessage(userId, 'Choose currency:', {
-      'reply_markup': {
-        'keyboard': [
+      reply_markup: {
+        keyboard: [
           ['AUD', 'BGN', 'BRL'],
           ['CAD', 'CHF', 'CNY'],
           ['CZK', 'DKK', 'EUR'],
@@ -88,11 +88,11 @@ bot.on('message', (msg) => {
           ['NZD', 'PHP', 'PLN'],
           ['RON', 'RUB', 'SEK'],
           ['SGD', 'THB', 'TRY'],
-          ['USD', 'ZAR']
+          ['USD', 'ZAR'],
         ],
-        'resize_keyboard': true,
-        'one_time_keyboard': true
-      }
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
     });
   }
 });
@@ -103,18 +103,18 @@ bot.onText(/(\/charts)$/, (msg) => {
   const userId = msg.from.id;
 
   bot.sendMessage(userId, 'Choose pair:', {
-    'reply_markup': {
-      'keyboard': [
+    reply_markup: {
+      keyboard: [
         ['EUR/RUB', 'USD/RUB', 'AUD/JPY'],
-        ['AUD/USD', 'CAD/JPY', 'CHF/JPY'], 
-        ['EUR/AUD', 'EUR/CAD', 'EUR/CHF'], 
-        ['EUR/GBP', 'EUR/JPY', 'EUR/USD'], 
-        ['GBP/CHF', 'GBP/JPY', 'GBP/USD'], 
-        ['USD/CAD', 'USD/CHF', 'USD/JPY']
+        ['AUD/USD', 'CAD/JPY', 'CHF/JPY'],
+        ['EUR/AUD', 'EUR/CAD', 'EUR/CHF'],
+        ['EUR/GBP', 'EUR/JPY', 'EUR/USD'],
+        ['GBP/CHF', 'GBP/JPY', 'GBP/USD'],
+        ['USD/CAD', 'USD/CHF', 'USD/JPY'],
       ],
-      'resize_keyboard': true,
-      'one_time_keyboard': true
-    }
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
   });
 });
 
@@ -123,7 +123,7 @@ bot.onText(/(\/charts)$/, (msg) => {
 bot.onText(/(\/note)$/, (msg) => {
   bot.sendMessage(msg.from.id,
 
-`You can use this service commands for notes:
+    `You can use this service commands for notes:
 
 \/note [00:00 note] - set note,
 example: /note 08:00 stand up dude
@@ -132,15 +132,13 @@ example: /note 08:00 stand up dude
 example: /note_ls
 
 \/note_rm [number] - remove note,
-example: /note_rm 2`
-
-  );
+example: /note_rm 2`);
 });
 
 /* Rate */
 
 bot.onText(/(\/rate)$/, (msg) => {
   bot.sendMessage(msg.from.id, rateMsg, {
-    parse_mode: 'HTML'
+    parse_mode: 'HTML',
   });
 });

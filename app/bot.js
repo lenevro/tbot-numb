@@ -1,9 +1,9 @@
 /* Telegram */
 
 const botApi = require('node-telegram-bot-api');
-      
-let token,
-    bot;
+
+let token;
+let bot;
 
 if (process.env.NODE_ENV === 'production') {
   token = process.env.BOT_TOKEN;
@@ -21,14 +21,14 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = bot;
 
-/* Time*/
+/* Time */
 
-const moment = require('moment-timezone'),
-      cityTimezones = require('city-timezones');
+const moment = require('moment-timezone');
+const cityTimezones = require('city-timezones');
 
 bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
-  let time,
-      checkZone = cityTimezones.lookupViaCity(match[1]);
+  let time;
+  const checkZone = cityTimezones.lookupViaCity(match[1]);
 
   if (moment.tz.zone(match[1])) {
     time = moment().tz(match[1]).format('MMMM Do YYYY, h:mm:ss a');
@@ -43,25 +43,26 @@ bot.onText(/\/time\s+(.+[^\s])/i, (msg, match) => {
 
 /* Random */
 
-const Chance = require('chance'),
-      chance = new Chance();
+const Chance = require('chance');
+
+const chance = new Chance();
 
 bot.onText(/(\/random)$/i, (msg, match) => {
-  bot.sendMessage(msg.from.id, chance.integer({min: 0}));
+  bot.sendMessage(msg.from.id, chance.integer({ min: 0 }));
 });
 
 bot.onText(/\/random\s+([\d]+)-([\d]+)/i, (msg, match) => {
   try {
-    chance.integer({min: +match[1], max: +match[2]})
-    bot.sendMessage(msg.from.id, chance.integer({min: +match[1], max: +match[2]}));
+    chance.integer({ min: +match[1], max: +match[2] });
+    bot.sendMessage(msg.from.id, chance.integer({ min: +match[1], max: +match[2] }));
   } catch (e) {
-    bot.sendMessage(msg.from.id, e.message.replace('Chance: ',''));
+    bot.sendMessage(msg.from.id, e.message.replace('Chance: ', ''));
   }
 });
 
 /* Modules */
 
-let inlineExcept = [];
+const inlineExcept = [];
 
 module.exports.inlineExcept = inlineExcept;
 
