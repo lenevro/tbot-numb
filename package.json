@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --cache -c node_modules/@funboxteam/eslint-config/.eslintrc.js --ext .js app index.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +24,22 @@
     "node-telegram-bot-api": "0.53.0"
   },
   "devDependencies": {
-    "dotenv": "9.0.2"
+    "@funboxteam/eslint-config": "5.3.0",
+    "dotenv": "9.0.2",
+    "eslint": "7.27.0",
+    "lint-staged": "11.0.0",
+    "simple-git-hooks": "2.4.1"
+  },
+  "lint-staged": {
+    "app/**/*.js": [
+      "eslint --fix --cache -c node_modules/@funboxteam/eslint-config/.eslintrc.js"
+    ],
+    "index.js": [
+      "eslint --fix --cache -c node_modules/@funboxteam/eslint-config/.eslintrc.js"
+    ]
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged",
+    "post-commit": "git update-index --again"
   }
 }
